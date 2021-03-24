@@ -8,4 +8,14 @@ function Save(user) {
   db.all(SaveUserQuery, Values, err => handle(err, "Failed at storing user."))
 }
 
-export { Save }
+function Index(callbackFunction) {
+  const ListUsersQuery = `SELECT * FROM users;`
+
+  db.all(ListUsersQuery, (err, rows) => {
+    handle(err, "Failed at listing all users.")
+
+    callbackFunction(rows)
+  })
+}
+
+export { Save, Index }
