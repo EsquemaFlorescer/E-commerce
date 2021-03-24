@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Save, Index } from "../database/models/UserModel"
+import { Save, Index, FindByEmail } from "../database/models/UserModel"
 import { User } from "../entities/User"
 import { Save as SaveRequest } from "../utils/SaveRequest"
 
@@ -8,18 +8,25 @@ const UserController = {
     SaveRequest(req)
 
     const { name, email, password } = req.body
+    
+    FindByEmail(email, rows => {
+      if(rows.length > 0) {
+        return res.status(400).json({ auth: false, message: "User with this email already exists." })
+      }
 
-    const user = new User({ name, email, password })
-    Save(user)
+      const user = new User({ name, email, password })
 
-    res.json(user)
+      Save(user)
+
+      return res.json({ auth: true, user })
+    })
   },
 
   list(req: Request, res: Response) {
     SaveRequest(req)
 
-    Index(rows => {
-      res.status(200).json({ users: rows })
+    Index((rows: any) => {
+      return res.status(200).json({ users: rows })
     })
   }
 }

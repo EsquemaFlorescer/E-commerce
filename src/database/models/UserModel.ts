@@ -18,4 +18,14 @@ function Index(callbackFunction) {
   })
 }
 
-export { Save, Index }
+function FindByEmail(email, callbackFunction) {
+  const FindUserByEmailQuery = `SELECT * FROM users WHERE email=?;`
+
+  db.all(FindUserByEmailQuery, email, (err, rows) => {
+    handle(err, "Failed at finding user by email.")
+
+    callbackFunction(rows)
+  })
+}
+
+export { Save, Index, FindByEmail }
