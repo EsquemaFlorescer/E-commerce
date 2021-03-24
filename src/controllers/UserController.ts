@@ -1,10 +1,13 @@
 import { Request, Response } from "express"
+import { User } from "../entities/User"
 
 const UserController = {
   create(req: Request, res: Response) {
     const { name, email, password } = req.body
 
-    res.json({ name, email, password })
+    const user = new User({ name, email, password })
+
+    res.json(user)
   }
 }
 
