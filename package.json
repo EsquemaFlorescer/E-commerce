@@ -5,8 +5,14 @@
   "repository": "https://github.com/VitorGouveia/E-commerce.git",
   "author": "VitorGouveia <vitor.gouveia@aluno.etecjrm.com.br>",
   "license": "MIT",
+  "scripts": {
+    "complile": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts"
+  },
   "devDependencies": {
     "@types/express": "^4.17.11",
+    "dotenv": "^8.2.0",
+    "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.3"
   },
   "dependencies": {

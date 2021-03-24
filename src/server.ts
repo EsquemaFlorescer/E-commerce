@@ -1,11 +1,4 @@
-import express from "express"
+import { app } from "./app"
 
-const app = express()
-
-app.use(express.json())
-
-app.get("/", (req, res) => {
-  res.json("Hello World")
-})
-
-app.listen(3333)
+const port = process.env.PORT
+app.listen(port, () => console.log(`http://localhost:${port}`))
