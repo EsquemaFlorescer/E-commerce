@@ -2,10 +2,11 @@ import { randomBytes } from "crypto"
 
 interface CreateItemDTO {
   name: ItemName
-  image: string
+  category: string
+  image: Array<any>
   price: ItemPrice
   stock: string
-  color: string
+  color?: string
 }
 
 interface ItemName {
@@ -17,7 +18,7 @@ interface ItemName {
 
 interface ItemPrice {
   discount: string
-  shipping: string
+  shipping_price: string
   full_price: string
 }
 
@@ -26,16 +27,20 @@ class Item {
   public readonly created_at
 
   public name: ItemName
+  public category: string
+  public orders: number = 0
   public image: string
   public price: ItemPrice
   public stock: string
-  public color: string
+  public color?: string
 
-  constructor(props) {
+  constructor(props: CreateItemDTO) {
     this.uuid = randomBytes(8).toString("hex")
     this.created_at = new Date(Date.now()).toLocaleDateString()
-
+    
+    
     Object.assign(this, props)
+    this.orders += 1
   }
 }
 

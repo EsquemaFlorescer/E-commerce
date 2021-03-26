@@ -6,6 +6,8 @@ function CreateTableItems(db) {
       uuid TEXT,
       created_at TEXT,
       name TEXT,
+      category TEXT,
+      orders TEXT
       image TEXT,
       price TEXT,
       stock TEXT,
