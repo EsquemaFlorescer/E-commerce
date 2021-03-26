@@ -3,6 +3,7 @@ import { Item } from "../entities/Item"
 
 const ItemController = {
   create(req: Request, res: Response) {
+    let {  } = req.body
   }
 }
 
