@@ -1,38 +1,30 @@
 import { randomBytes } from "crypto"
 
 interface CreateItemDTO {
-  name: ItemName
+  name: string
+  short_name: string
+  description: string
+  price: string
+  shipping_price: string
+  discount: string
   category: string
   image: Array<any>
-  price: ItemPrice
-  stock: string
-  color?: string
-}
-
-interface ItemName {
-  full_name: string
-  short_name: string
-  brand: string
-  manufacturer: string
-}
-
-interface ItemPrice {
-  discount: string
-  shipping_price: string
-  full_price: string
+  orders: string
 }
 
 class Item {
   public readonly uuid
   public readonly created_at
 
-  public name: ItemName
+  public name: string
+  public short_name: string
+  public description: string
+  public price: string
+  public shipping_price: string
+  public discount: string
   public category: string
-  public orders: number = 0
   public image: string
-  public price: ItemPrice
-  public stock: string
-  public color?: string
+  public orders: number
 
   constructor(props: CreateItemDTO) {
     this.uuid = randomBytes(8).toString("hex")

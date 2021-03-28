@@ -1,14 +1,32 @@
 import { Request, Response } from "express"
 import { Item } from "../entities/Item"
+import { Save, Index, FindByCategory, Delete } from "../database/models/ItemModel"
 
 const ItemController = {
   create(req: Request, res: Response) {
-    let { name, category, image, price, stock, color } = req.body
+    let { name, short_name, description, price, shipping_price, discount, category, image, orders } = req.body
 
-    const item = new Item({ name, category, image, price, stock, color })
+    const item = new Item({ name, short_name, description, price, shipping_price, discount, category,image, orders })
 
-    res.status(200).json(item)
-  }
+    Save(item)
+    return res.status(200).json(item)
+  },
+
+  list(req: Request, res: Response) {
+    Index((rows: any) => {
+      return res.status(200).json(rows)
+    })
+  },
+
+  findByCategory(req: Request, res: Response) {
+    let { category } = req.params
+
+    FindByCategory(category, (rows: any) => {
+      return res.status(302).json(rows)
+    })
+  },
+
+  
 }
 
 export { ItemController }
