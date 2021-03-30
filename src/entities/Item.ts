@@ -32,7 +32,6 @@ class Item {
     
     
     Object.assign(this, props)
-    this.orders += 1
   }
 }
 

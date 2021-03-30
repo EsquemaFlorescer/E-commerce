@@ -29,7 +29,7 @@ function FindByCategory(category, callbackFunction) {
 }
 
 function Update(item) {
-  const UpdateItemQuery = `UPDATE item SET name=?, short_name=?, description=?, price=?, shipping_price=?, discount=?, category=?, image=?, orders=? WHERE uuid=?`
+  const UpdateItemQuery = `UPDATE items SET name=?, short_name=?, description=?, price=?, shipping_price=?, discount=?, category=?, image=?, orders=? WHERE uuid=?`
 
   db.all(UpdateItemQuery, item, err => handle(err, "Failed at updating user."))
 }

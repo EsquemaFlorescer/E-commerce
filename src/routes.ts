@@ -18,6 +18,7 @@ router.get("/dashboard/user", UserController.list) /* Listing all users */
 
 /* Items */
 router.post("/item", ItemController.create) /* Create item */
+router.put("/item", ItemController.edit) /* Edits item */
 router.delete("/item", ItemController.delete) /* Deletes item */
 
 router.get("/dashboard/item", ItemController.list) /* List all items */

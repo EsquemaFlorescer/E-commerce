@@ -27,7 +27,11 @@ const ItemController = {
   },
 
   edit(req: Request, res: Response) {
-    let { uuid } = req.body
+    let { name, short_name, description, price, shipping_price, discount, category, image, orders, uuid } = req.body
+    const item = [name, short_name, description, price, shipping_price, discount, category, image, orders, uuid]
+    Update(item)
+
+    return res.status(200).json("Item edited.")
   },
 
   delete(req: Request, res: Response) {
@@ -35,7 +39,7 @@ const ItemController = {
 
     Delete(uuid)
 
-    return res.status(200).json("item deleted.")
+    return res.status(200).json("Item deleted.")
   }
 }
 
