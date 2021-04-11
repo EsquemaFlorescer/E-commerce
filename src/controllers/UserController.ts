@@ -30,12 +30,13 @@ const UserController = {
     SaveRequest(req)
 
     const { name, email, password } = req.body
+    const user = new User({ name, email, password })
 
     const authHeader = req.headers.authorization
 
     try {
       const jwtHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
-      Update([ name, email, password, jwtHeader["uuid"] ])
+      Update([ name, email, user.password, jwtHeader["uuid"] ])
       return res.status(200).json({ auth: true, message: "User edited with success" })
     } catch (error) {
       return res.status(400).json({ auth: false, message: "JWT token invalid, go back to login page" })
@@ -45,13 +46,12 @@ const UserController = {
   delete(req: Request, res: Response) {
     SaveRequest(req)
 
-    const { password } = req.body
-
     const authHeader = req.headers.authorization
 
     try {
       const jwtHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
-      Delete([ jwtHeader["uuid"], password ])
+
+      Delete(jwtHeader["uuid"])
       return res.status(200).json({ auth: true, message: "User deleted with success" })
     } catch (error) {
       return res.status(400).json({ auth: false, message: "JWT token invalid, go back to login page" })

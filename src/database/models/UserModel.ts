@@ -35,7 +35,7 @@ function Update(userNewInformation) {
 }
 
 function Delete(user) {
-  const DeleteUserQuery = `DELETE FROM users WHERE uuid=? AND password=?`
+  const DeleteUserQuery = `DELETE FROM users WHERE uuid=?`
 
   db.all(DeleteUserQuery, user, err => handle(err, "Failed at deleting user."))
 }
