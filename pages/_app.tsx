@@ -2,6 +2,7 @@ import "../styles/global.css"
 
 import "../styles/components/Header.css"
 import "../styles/components/Sidebar.css"
+import "../styles/components/Card.css"
 import "../styles/home.css"
 
 import { Sidebar } from "./components/Sidebar"

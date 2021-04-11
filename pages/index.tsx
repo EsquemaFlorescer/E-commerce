@@ -4,11 +4,13 @@ import { Card } from "./components/Card"
 
 const Home = () => {
   return(
-    <Card
-      title="dwdw"
-      description="wejdw"
-      color="black"
-    />
+    <main>
+      <Card
+        title="Simple Card"
+        description="This is a simple useless card."
+        color="purple"
+      />
+    </main>
   )
 }
 

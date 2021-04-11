@@ -1,0 +1,31 @@
+.card {
+  padding: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.big-card {
+  padding: 0px;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  background: rgb(27, 27, 27);
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.card-top {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  height: 6rem;
+  padding: 0px 1rem;
+  color: rgba(255, 255, 255, 0.57);
+  font-size: 1.25rem;
+}
+
+.card-content {
+  padding: 0px 1.5rem 1.5rem;
+}
