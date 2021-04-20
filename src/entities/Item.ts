@@ -9,12 +9,13 @@ interface CreateItemDTO {
   discount: string
   category: string
   image: Array<any>
-  orders: string
+  orders: number
+  rating: number
 }
 
 class Item {
-  public readonly uuid
-  public readonly created_at
+  public readonly uuid: string
+  public readonly created_at: Date
 
   public name: string
   public short_name: string
@@ -25,11 +26,11 @@ class Item {
   public category: string
   public image: string
   public orders: number
+  public rating: number
 
   constructor(props: CreateItemDTO) {
     this.uuid = randomBytes(8).toString("hex")
-    this.created_at = new Date(Date.now()).toLocaleDateString()
-    
+    this.created_at = new Date()
     
     Object.assign(this, props)
   }

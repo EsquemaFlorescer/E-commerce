@@ -2,7 +2,7 @@ import { handle } from "../../utils/ErrorHandler"
 import { db } from "../sqlite"
 
 function Save(item) {
-  const SaveItemQuery = `INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+  const SaveItemQuery = `INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
   const Values = Object.values(item)
 
   db.all(SaveItemQuery, Values, err => handle(err, "Failed at storing item."))
@@ -28,8 +28,24 @@ function FindByCategory(category, callbackFunction) {
   })
 }
 
+function FindById(uuid, callbackFunction) {
+  const FindItemById = `SELECT * FROM items WHERE uuid=?;`
+
+  db.all(FindItemById, uuid, (err, rows) => {
+    handle(err, "Failed at finding item by uuid.")
+
+    callbackFunction(rows[0])
+  })
+}
+
+function UpdateRating(rating, uuid) {
+  const UpdateRatingQuery = `UPDATE items SET rating=? WHERE uuid=?`
+
+  db.all(UpdateRatingQuery, [rating, uuid], err => handle(err, "Failed at updating rating."))
+}
+
 function Update(item) {
-  const UpdateItemQuery = `UPDATE items SET name=?, short_name=?, description=?, price=?, shipping_price=?, discount=?, category=?, image=?, orders=? WHERE uuid=?`
+  const UpdateItemQuery = `UPDATE items SET name=?, short_name=?, description=?, price=?, shipping_price=?, discount=?, category=?, image=?, orders=?, rating=? WHERE uuid=?`
 
   db.all(UpdateItemQuery, item, err => handle(err, "Failed at updating user."))
 }
@@ -40,4 +56,4 @@ function Delete(uuid) {
   db.all(DeleteItemQuery, uuid, err => handle(err, "Failed at deleting item."))
 }
 
-export { Save, Index, FindByCategory, Update, Delete }
+export { Save, Index, FindByCategory, FindById, UpdateRating, Update, Delete }

@@ -13,7 +13,8 @@ function CreateTableItems(db) {
       discount TEXT,
       category TEXT,
       image TEXT,
-      orders TEXT
+      orders TEXT,
+      rating TEXT
     );
   `
 
