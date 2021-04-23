@@ -13,9 +13,11 @@ const ItemController = {
   },
 
   list(req: Request, res: Response) {
+    const { id } = req.params
+
     Index((rows: any) => {
       return res.status(200).json(rows)
-    })
+    }, Number(id))
   },
 
   findByCategory(req: Request, res: Response) {

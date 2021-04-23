@@ -24,7 +24,7 @@ router.put("/item/edit", ItemController.edit) /* Edits item */
 router.patch("/item/rate", ItemController.rate) /* Rates item */
 router.delete("/item/delete", ItemController.delete) /* Deletes item */
 
-router.get("/dashboard/item", ItemController.list) /* List all items */
+router.get("/dashboard/item/:id", ItemController.list) /* List all items */
 router.get("/dashboard/item/:category", ItemController.findByCategory) /* List all items by category */
 
 export { router }

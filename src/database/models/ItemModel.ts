@@ -8,10 +8,10 @@ function Save(item) {
   db.all(SaveItemQuery, Values, err => handle(err, "Failed at storing item."))
 }
 
-function Index(callbackFunction) {
-  const ListItemsQuery = `SELECT * FROM items;`
+function Index(callbackFunction: Function, numberOfItems: number) {
+  const ListItemsQuery = `SELECT * FROM items LIMIT ?;`
 
-  db.all(ListItemsQuery, (err, rows) => {
+  db.all(ListItemsQuery, numberOfItems, (err, rows) => {
     handle(err, "Failed at listing all items.")
 
     callbackFunction(rows)
