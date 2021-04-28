@@ -9,6 +9,7 @@ const router = Router()
 
 /* User */
 router.post("/user/", UserController.create) /* Create user / Register */
+router.post("/user/address", UserController.createAddress) /* Create user / Register */
 router.post("/user/login", SessionController.create) /* Authenticate user / Login */ 
 router.put("/user/edit", UserController.updateUser) /* Editing user */
 router.delete("/user/delete", UserController.delete) /* Deleting a user */ 

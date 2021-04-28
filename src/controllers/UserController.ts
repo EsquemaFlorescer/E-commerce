@@ -9,26 +9,30 @@ const UserController = {
   async create(request: Request, response: Response) {
     SaveRequest(request)
 
-    let { name, email, password }: User  = request.body
-    password = await hash(password, 20)
+    let { name, email, cpf, password }: User  = request.body
 
-    const userExists = await prisma.user.findMany({
-      where: {
-        email
-      }
-    })
-
-    if(userExists) {
-      return response.status(400).json({
-        auth: false, message: "User already exists", userExists
-      })
-    }
     try {
+      password = await hash(password, 10)
+  
+      const userExists = await prisma.user.findMany({
+        where: {
+          email: {
+            equals: email
+          }
+        }
+      })
+  
+      if(userExists.length > 1) {
+        return response.status(400).json({
+          auth: false, message: "User already exists", userExists
+        })
+      }
 
       const user = await prisma.user.create({
         data: {
           name,
           email,
+          cpf,
           password
         }
       })
@@ -55,7 +59,7 @@ const UserController = {
   async updateUser(request: Request, response: Response) {
     SaveRequest(request)
 
-    const { id, name, last_name, cpf, email, password, address } = request.body
+    const { id, name, last_name, cpf, email, password } = request.body
 
     const authorizationHeader = request.headers.authorization
     
@@ -63,7 +67,7 @@ const UserController = {
       const JWTHeader = jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
       const user = await prisma.user.update({
         where: {
-          id
+          id: id
         },
 
         data: {
@@ -71,18 +75,44 @@ const UserController = {
           last_name,
           cpf,
           email,
-          password,
-          address
+          password
         }
       })
 
-      return response.status(200).json({ auth: true, JWTHeader, user, message: "User edited with success!" })
+      return response.status(200).json({ auth: true, user, message: "User edited with success!" })
 
     } catch (error) {
 
       return response.status(400).json({ 
         auth: false, 
         message: error.message 
+      })
+    }
+  },
+
+  async createAddress(request: Request, response: Response) {
+    SaveRequest(request)
+
+    const { userId, postalCode, city, state, street, number } = request.body
+
+    try {
+      const address = await prisma.address.create({
+        data: {
+          userId,
+          postalCode,
+          city,
+          state,
+          street,
+          number          
+        }
+      })
+
+      return response.status(200).json({ address })
+
+    } catch (error) {
+      
+      return response.status(400).json({
+        message: error.message
       })
     }
   },
@@ -124,6 +154,9 @@ const UserController = {
       if(!quantity) quantity = 0
 
       const users = await prisma.user.findMany({
+        include: {
+          address: true
+        },
         take: quantity,
         skip: (Number(page) * Number(quantity))
       })
