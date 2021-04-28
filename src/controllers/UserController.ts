@@ -28,7 +28,7 @@ const UserController = {
   
       response.header("authorization", access_token)
   
-      return response.status(201).json({ auth: true, access_token, user })
+      return response.status(201).json({ auth: true, access_token, user, message: "User created with success!" })
       
     } catch (error) {
 
@@ -38,20 +38,38 @@ const UserController = {
     }
   },
 
-  edit(req: Request, res: Response) {
-    SaveRequest(req)
+  async updateUser(request: Request, response: Response) {
+    SaveRequest(request)
 
-    const { name, email, password } = req.body
-    const user = new User({ name, email, password })
+    const { id, name, last_name, cpf, email, password, address } = request.body
 
-    const authHeader = req.headers.authorization
+    const authorizationHeader = request.headers.authorization
+    const jwtHeader = jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
 
     try {
-      const jwtHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
-      Update([ name, email, user.password, jwtHeader["uuid"] ])
-      return res.status(200).json({ auth: true, message: "User edited with success" })
+      const user = await prisma.user.update({
+        where: {
+          id
+        },
+
+        data: {
+          name,
+          last_name,
+          cpf,
+          email,
+          password,
+          address
+        }
+      })
+
+      return response.status(200).json({ auth: true, jwtHeader, user, message: "User edited with success!" })
+
     } catch (error) {
-      return res.status(400).json({ auth: false, message: "JWT token invalid, go back to login page" })
+
+      return response.status(400).json({ 
+        auth: false, 
+        message: error.message 
+      })
     }
   },
 
