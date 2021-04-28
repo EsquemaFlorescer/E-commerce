@@ -8,7 +8,7 @@
   "scripts": {
     "complile": "tsc",
     "database": "ts-node-dev src/database/sqlite.ts",
-    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules,tests --no-notify src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules,tests --no-notify -r tsconfig-paths/register src/server.ts",
     "test": "jest"
   },
   "devDependencies": {
@@ -24,6 +24,7 @@
     "supertest": "^6.1.3",
     "ts-jest": "^26.5.4",
     "ts-node-dev": "^1.1.6",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^4.2.3"
   },
   "dependencies": {
