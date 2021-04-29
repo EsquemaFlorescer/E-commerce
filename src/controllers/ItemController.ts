@@ -57,7 +57,7 @@ const ItemController = {
 
   },
 
-  edit(req: Request, res: Response) {
+  update(req: Request, res: Response) {
     let { name, short_name, description, price, shipping_price, discount, category, image, orders, rating, uuid } = req.body
     const item = [name, short_name, description, price, shipping_price, discount, category, image, orders, rating, uuid]
     Update(item)

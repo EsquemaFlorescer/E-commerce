@@ -56,7 +56,7 @@ const UserController = {
     }
   },
 
-  async updateUser(request: Request, response: Response) {
+  async update(request: Request, response: Response) {
     SaveRequest(request)
 
     const { id, name, last_name, cpf, email, password } = request.body

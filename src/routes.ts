@@ -7,25 +7,27 @@ import { DashboardController } from "@controllers/DashboardController"
 
 const router = Router()
 
-/* User */
-router.post("/user/", UserController.create) /* Create user / Register */
-router.post("/user/address", UserController.createAddress) /* Create user / Register */
+/* User CRUD */
+router.post("/user", UserController.create) /* Creates user */
+router.post("/user/:page", UserController.list) /* Lists users */
+router.patch("/user", UserController.update) /* Updates an especific user */
+router.delete("/user", UserController.delete) /* Deletes an especific user */ 
+router.delete("/dashboard/user", DashboardController.deleteUser) /* Deletes a user with admin permissions */
+router.post("/user/address", UserController.createAddress) /* Creates an address for an especific user */
+
+/* User JWT Related */
 router.post("/user/login", SessionController.create) /* Authenticate user / Login */ 
-router.put("/user/edit", UserController.updateUser) /* Editing user */
-router.delete("/user/delete", UserController.delete) /* Deleting a user */ 
-
-router.post("/dashboard/user/:page", UserController.list) /* Listing all users */
-router.delete("/dashboard/user", DashboardController.deleteUser) /* Deleting a user */
 
 
 
-/* Items */
-router.post("/item", ItemController.create) /* Create item */
-router.put("/item/edit", ItemController.edit) /* Edits item */
-router.patch("/item/rate", ItemController.listRating) /* Rates item */
+/* Items CRUD */
+router.post("/item", ItemController.create) /* Creates item */
+router.post("/item/:page", ItemController.list) /* Lists items */
+router.patch("/item", ItemController.update) /* Updates an especific item */
 router.delete("/item/delete", ItemController.delete) /* Deletes item */
 
-router.post("/dashboard/item/:page", ItemController.list) /* List all items */
-router.get("/dashboard/item/:category", ItemController.findByCategory) /* List all items by category */
+/* Other item listing features */
+router.post("/item/rate", ItemController.listRating) /* Lists an especific item's ratings */
+router.get("/item/:category", ItemController.findByCategory) /* List all items by category */
 
 export { router }
