@@ -146,6 +146,18 @@ const ItemController = {
     let { id } = request.body
 
     try {
+      await prisma.image.deleteMany({
+        where: {
+          itemId: id
+        }
+      })
+
+      await prisma.rating.deleteMany({
+        where: {
+          itemId: id
+        }
+      })
+
       const item = await prisma.item.delete({
         where: {
           id
