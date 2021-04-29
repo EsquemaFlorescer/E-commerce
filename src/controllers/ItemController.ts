@@ -141,9 +141,34 @@ const ItemController = {
       }
 
       if(request.query.name && request.query.sort == "desc") {
+        const items = await prisma.item.findMany({
+          orderBy: [{
+            name: "desc"
+          }],
+          include: {
+            image: true,
+            rating: true
+          },
+          take: quantity,
+          skip: (Number(page) * Number(quantity))
+        })
 
+        return response.status(200).json({ items })
       } else if(request.query.name && request.query.sort == "asc") {
         // /item?name=headset&sort=asc
+        const items = await prisma.item.findMany({
+          orderBy: [{
+            name: "asc"
+          }],
+          include: {
+            image: true,
+            rating: true
+          },
+          take: quantity,
+          skip: (Number(page) * Number(quantity))
+        })
+
+        return response.status(200).json({ items })
       }
 
       if(!quantity || quantity == null || quantity == undefined) {
