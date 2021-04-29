@@ -150,7 +150,36 @@ const UserController = {
     let { quantity } = request.body
 
     
+    
     try {
+      if(request.query.name) {
+        const items = await prisma.item.findMany({
+          where: {
+            name: {
+              contains: String(request.query.name)
+            }
+          },
+          include: {
+            image: true
+          }
+        })
+
+        return response.status(200).json({ items })
+      }
+
+      if(request.query.sort == "desc") {
+        const items = await prisma.item.findMany({
+          orderBy: [{
+            name: "desc"
+          }],
+          include: {
+            image: true
+          }
+        })
+
+        return response.status(200).json({ items })
+      }
+
       if(!quantity) quantity = 0
 
       const users = await prisma.user.findMany({
