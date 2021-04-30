@@ -32,7 +32,7 @@ router.post("/user/login", SessionController.create) /* Authenticate user / Logi
 router.post("/item", ItemController.create) /* Creates item */
 router.post("/item/list/:page", ItemController.list) /* Lists items */
 router.patch("/item", ItemController.update) /* Updates an especific item */
-router.delete("/item/delete", ItemController.delete) /* Deletes item */
+router.delete("/item", ItemController.delete) /* Deletes item */
 
 /* Other item listing features */
 router.post("/item/rate", ItemController.listRating) /* Lists an especific item's ratings */

@@ -57,12 +57,35 @@ const ItemController = {
 
   },
 
-  update(req: Request, res: Response) {
-    let { name, short_name, description, price, shipping_price, discount, category, image, orders, rating, uuid } = req.body
-    const item = [name, short_name, description, price, shipping_price, discount, category, image, orders, rating, uuid]
-    Update(item)
+  async update(request: Request, response: Response) {
+    let { id, name, short_name, description, price, shipping_price, discount, category, orders } = request.body
 
-    return res.status(200).json("Item edited.")
+    try {
+      
+      const item = await prisma.item.update({
+        where: {
+          id
+        },
+        data: {
+          name,
+          short_name,
+          description,
+          price,
+          shipping_price,
+          discount,
+          category,
+          orders
+        }
+      })
+
+      return response.json({ item })
+
+    } catch (error) {
+      
+      return response.status(500).json({
+        message: error.message
+      })
+    }
   },
 
   async listRating(request: Request, response: Response) {
@@ -214,7 +237,7 @@ const ItemController = {
         }
       })
 
-      return response.status(500).json({ item })
+      return response.status(200).json({ item })
       
     } catch (error) {
       
