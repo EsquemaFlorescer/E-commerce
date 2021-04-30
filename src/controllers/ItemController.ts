@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
 import { prisma } from "prisma"
-import { Save, Index, FindByCategory, FindById, UpdateRating, Update, Delete } from "@database/sqlite/models/ItemModel"
 
 const ItemController = {
   async create(request: Request, response: Response) {
@@ -53,8 +52,41 @@ const ItemController = {
     }
   },
 
-  async createImages(request: Request, response: Response) {
+  async createImage(request: Request, response: Response) {
+    const { itemId, link } = request.body
 
+    try {
+      const image = await prisma.image.create({
+        data: {
+          itemId,
+          link
+        }
+      })
+
+      return response.status(200).json({ image })
+
+    } catch (error) {
+      
+      return response.status(500).json({ message: error.message })
+    }
+  },
+
+  async removeImage(request: Request, response: Response) {
+    const { id } = request.body
+
+    try {
+      const image = await prisma.image.delete({
+        where: {
+          id
+        }
+      })
+
+      return response.status(200).json({ image })
+
+    } catch (error) {
+      
+      return response.status(500).json({ message: error.message })
+    }
   },
 
   async update(request: Request, response: Response) {

@@ -34,6 +34,10 @@ router.post("/item/list/:page", ItemController.list) /* Lists items */
 router.patch("/item", ItemController.update) /* Updates an especific item */
 router.delete("/item", ItemController.delete) /* Deletes item */
 
+/* Image related */
+router.post("/item/image", ItemController.createImage)
+router.delete("/item/image", ItemController.removeImage)
+
 /* Other item listing features */
 router.post("/item/rate", ItemController.listRating) /* Lists an especific item's ratings */
 router.get("/item/list/category/:category", ItemController.findByCategory) /* List all items by category */
