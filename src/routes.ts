@@ -36,6 +36,6 @@ router.delete("/item/delete", ItemController.delete) /* Deletes item */
 
 /* Other item listing features */
 router.post("/item/rate", ItemController.listRating) /* Lists an especific item's ratings */
-router.get("/item/:category", ItemController.findByCategory) /* List all items by category */
+router.get("/item/list/category/:category", ItemController.findByCategory) /* List all items by category */
 
 export { router }
