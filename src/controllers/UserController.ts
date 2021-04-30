@@ -62,9 +62,13 @@ const UserController = {
     const { id, name, last_name, cpf, email, password } = request.body
 
     const authorizationHeader = request.headers.authorization
+
+    if(!authorizationHeader) {
+      return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
+    }
     
     try {
-      const JWTHeader = jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
+      jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
       const user = await prisma.user.update({
         where: {
           id: id
@@ -76,6 +80,10 @@ const UserController = {
           cpf,
           email,
           password
+        },
+
+        include: {
+          address: true
         }
       })
 
@@ -96,20 +104,14 @@ const UserController = {
     const { userId, postalCode, city, state, street, number } = request.body
 
     try {
-      const address = await prisma.user.update({
-        where: {
-          id: userId
-        },
+      const address = await prisma.address.create({
         data: {
-          address: {
-            create: {
-              postalCode,
-              city,
-              state,
-              street,
-              number          
-            }
-          }
+          userId,
+          postalCode,
+          city,
+          state,
+          street,
+          number          
         },
       })
 
@@ -129,9 +131,19 @@ const UserController = {
     const { id } = request.body
 
     const authHeader = request.headers.authorization
+
+    if(!authHeader) {
+      return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
+    }
     
     try {
       const JWTHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
+      await prisma.address.deleteMany({
+        where: {
+          userId: id
+        }
+      })
+
       const user = await prisma.user.delete({
         where: {
           id
@@ -152,7 +164,8 @@ const UserController = {
   async list(request: Request, response: Response) {
     SaveRequest(request)
 
-    let { page, quantity } = request.body
+    let { page } = request.params
+    let { quantity } = request.body
     
     try {
       if(request.query.name) {
