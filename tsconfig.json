@@ -23,8 +23,6 @@
     "baseUrl": "./src",
     "paths": {
       "@controllers/*": ["controllers/*"],
-      "@database/*": ["database/*"],
-      "@entities/*": ["entities/*"],
       "@tests/*": ["tests/*"],
       "@utils/*": ["utils/*"]
     }
