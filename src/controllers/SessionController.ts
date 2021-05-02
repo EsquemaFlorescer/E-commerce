@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken"
 import { Request, Response } from "express"
 import { Save as SaveRequest } from "@utils/SaveRequest"
-import { FindByEmail } from "@database/sqlite/models/UserModel"
 import { compare } from "bcrypt"
 import { prisma } from "../prisma"
 

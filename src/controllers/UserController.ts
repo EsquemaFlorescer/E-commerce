@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken"
 import { Request, Response } from "express"
+import jwt from "jsonwebtoken"
 import { Save as SaveRequest } from "@utils/SaveRequest"
 import { prisma } from "../prisma"
 import { User } from "@prisma/client"
