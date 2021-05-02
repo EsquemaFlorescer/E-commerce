@@ -48,7 +48,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -86,7 +86,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -105,7 +105,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -123,7 +123,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -152,9 +152,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({
-        message: error.message
-      })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -174,7 +172,6 @@ const ItemController = {
 
       let allNumberRatings = (Number(item?.rating?.one_star) * 1) + (Number(item?.rating?.two_star) * 2) + (Number(item?.rating?.three_star) * 3) + (Number(item?.rating?.four_star) * 4) + (Number(item?.rating?.five_star) * 5)
       let allRatings = Number(item?.rating?.one_star) + Number(item?.rating?.two_star) + Number(item?.rating?.three_star) + Number(item?.rating?.four_star)+ Number(item?.rating?.five_star)
-      console.log(`${allNumberRatings}\n${allRatings}`)
 
       return response.status(200).json({
         ratings: {
@@ -189,7 +186,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -207,7 +204,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -283,7 +280,7 @@ const ItemController = {
 
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
 
@@ -313,7 +310,7 @@ const ItemController = {
       
     } catch (error) {
       
-      return response.status(500).json({ message: error.message })
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   }
 }
