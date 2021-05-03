@@ -6,10 +6,10 @@
   "author": "VitorGouveia <vitor.gouveia@aluno.etecjrm.com.br>",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development prisma migrate dev ts-node-dev --respawn --transpile-only --ignore-watch node_modules,tests --no-notify -r tsconfig-paths/register src/server.ts",
+    "dev": "NODE_ENV=development prisma migrate dev && ts-node-dev --respawn --transpile-only --ignore-watch node_modules,tests --no-notify -r tsconfig-paths/register src/server.ts",
     "test": "NODE_ENV=test prisma migrate reset && jest",
     "build": "babel src --extensions \".js,.ts\" --out-dir build --copy-files --no-copy-ignored",
-    "start": "npx pm2 start pm2.config.js"
+    "start": "node build/server.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.16",

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { prisma } from "prisma"
+import { prisma } from "../prisma"
 
 const ItemController = {
   async create(request: Request, response: Response) {
@@ -275,6 +275,8 @@ const ItemController = {
         take: quantity,
         skip: (Number(page) * Number(quantity))
       })
+
+      console.log(items)
 
       return response.status(302).json({ items })
 
