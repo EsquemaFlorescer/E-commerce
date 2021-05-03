@@ -108,6 +108,32 @@ describe("User Register", () => {
   })
 
   it("should delete user", async () => {
+    await prisma.user.deleteMany()
+
+    let { name, cpf, email, password } = user_test
+
+    const create_user = await request(app)
+      .post("/user")
+      .send({
+        name,
+        cpf,
+        email,
+        password
+      })
+    
+    const id = create_user.body.user.id
+    const access_token = create_user.body.access_token
+
+    const login = await request(app)
+      .post("/user/login")
+      .set("authorization", access_token)
+      .send({
+        email: user_test.email,
+        password: user_test.password
+      })
+
+    const refresh_token = login.body.refresh_token
+
     const response = await request(app)
       .delete("/user")
       .set("authorization", refresh_token)
