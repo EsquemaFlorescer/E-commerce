@@ -103,8 +103,6 @@ describe("User Register", () => {
     expect(response.body.user.name).toBe("victor")
     expect(response.body.auth).toBe(true)
     expect(response.status).toBe(200)
-
-    await prisma.$disconnect()
   })
 
   it("should delete user", async () => {
@@ -142,5 +140,6 @@ describe("User Register", () => {
       
     expect(response.body.auth).toBe(true)
     expect(response.status).toBe(200)
+    await prisma.$disconnect()
   })
 })
