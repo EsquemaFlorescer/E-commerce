@@ -2,8 +2,12 @@ import request from "supertest"
 import { prisma } from "../prisma"
 import { app } from "../app"
 
+var user_id = null
+
 const user_test = {
+  id: user_id,
   name: "vitor",
+  last_name: "vitor",
   email: "gouveia",
   cpf: "000.000.000-00",
   password: "12345"
@@ -35,13 +39,23 @@ describe("User Register", () => {
         quantity: 1 
       })
 
+    user_id = response.body[0].id
     expect(response.body[0].name).toBe(user_test.name)
     expect(response.body[0].email).toBe(user_test.email)
     expect(response.body[0].password).toBe(user_test.password)
     expect(response.status).toBe(200)
   })
 
-  // it("should update user", async () => {
-  //   const response = await request(app)
-  // })
+  it("should update user", async () => {
+    const response = await request(app)
+      .patch("/user")
+      .send({
+        id: user_test.id,
+        name: user_test.name,
+        last_name: user_test.last_name,
+        cpf: user_test.cpf,
+        email: user_test.email,
+        password: user_test.password,
+      })
+  })
 })
