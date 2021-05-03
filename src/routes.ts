@@ -19,12 +19,12 @@ router.post("/user/list/:page", UserController.list) /* Lists users */
 // /user/list/1?name=vitor&sort=asc         finds all users that contain "vitor" and order them ASC
 
 router.patch("/user", UserController.update) /* Updates an especific user */
-router.delete("/user", UserController.delete) /* Deletes an especific user */ 
+router.delete("/user", UserController.delete) /* Deletes an especific user */
 router.delete("/dashboard/user", DashboardController.deleteUser) /* Deletes a user with admin permissions */
 router.post("/user/address", UserController.createAddress) /* Creates an address for an especific user */
 
 /* User JWT Related */
-router.post("/user/login", SessionController.create) /* Authenticate user / Login */ 
+router.post("/user/login", SessionController.create) /* Authenticate user / Login */
 
 
 

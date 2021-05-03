@@ -6,11 +6,11 @@ import { hash } from "bcrypt"
 
 const UserController = {
   async create(request: Request, response: Response) {
-    let { name, email, cpf, password }: User  = request.body
+    let { name, email, cpf, password }: User = request.body
 
     try {
       password = await hash(password, 10)
-  
+
       const userExists = await prisma.user.findMany({
         where: {
           email: {
@@ -18,8 +18,8 @@ const UserController = {
           }
         }
       })
-  
-      if(userExists.length > 1) {
+
+      if (userExists.length > 1) {
         return response.status(400).json({
           auth: false, message: "User already exists", userExists
         })
@@ -33,18 +33,18 @@ const UserController = {
           password
         }
       })
-  
-      const access_token = jwt.sign({ 
-        id: user.id, 
-        name, 
-        email, 
-        password: user.password 
+
+      const access_token = jwt.sign({
+        id: user.id,
+        name,
+        email,
+        password: user.password
       }, String(process.env.JWT_ACCESS_TOKEN), { expiresIn: "24h" })
-  
+
       response.header("authorization", access_token)
-  
+
       return response.status(201).json({ auth: true, access_token, user, message: "User created with success!" })
-      
+
     } catch (error) {
 
       return response.status(500).json({ error: error.name, details: { message: error.message } })
@@ -56,10 +56,10 @@ const UserController = {
 
     const authorizationHeader = request.headers.authorization
 
-    if(!authorizationHeader) {
+    if (!authorizationHeader) {
       return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
     }
-    
+
     try {
       jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
       const user = await prisma.user.update({
@@ -84,9 +84,9 @@ const UserController = {
 
     } catch (error) {
 
-      return response.status(400).json({ 
-        auth: false, 
-        message: error.message 
+      return response.status(400).json({
+        auth: false,
+        message: error.message
       })
     }
   },
@@ -102,14 +102,14 @@ const UserController = {
           city,
           state,
           street,
-          number          
+          number
         },
       })
 
       return response.status(200).json({ address })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -119,10 +119,10 @@ const UserController = {
 
     const authHeader = request.headers.authorization
 
-    if(!authHeader) {
+    if (!authHeader) {
       return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
     }
-    
+
     try {
       const JWTHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
       await prisma.address.deleteMany({
@@ -148,9 +148,9 @@ const UserController = {
   async list(request: Request, response: Response) {
     let { page } = request.params
     let { quantity } = request.body
-    
+
     try {
-      if(request.query.name) {
+      if (request.query.name) {
         // dashboard/user?name=vitor
         // returns users that contain name vitor
         const users = await prisma.user.findMany({
@@ -169,7 +169,7 @@ const UserController = {
         return response.status(200).json({ users })
       }
 
-      if(request.query.name && request.query.sort == "desc") {
+      if (request.query.name && request.query.sort == "desc") {
         // dashboard/user?name=vitor&sort=desc
         const users = await prisma.user.findMany({
           orderBy: [{
@@ -199,7 +199,7 @@ const UserController = {
         return response.status(200).json({ user })
       }
 
-      if(!quantity) quantity = 0
+      if (!quantity) quantity = 0
 
       const users = await prisma.user.findMany({
         include: {
@@ -212,7 +212,7 @@ const UserController = {
       return response.status(200).json(users)
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   }

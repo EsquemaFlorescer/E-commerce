@@ -47,7 +47,7 @@ const ItemController = {
       return response.status(200).json({ item })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -85,7 +85,7 @@ const ItemController = {
       return response.status(200).json({ rating })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -104,7 +104,7 @@ const ItemController = {
       return response.status(200).json({ image })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -122,7 +122,7 @@ const ItemController = {
       return response.status(200).json({ image })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -131,7 +131,7 @@ const ItemController = {
     let { id, name, short_name, description, price, shipping_price, discount, category, orders } = request.body
 
     try {
-      
+
       const item = await prisma.item.update({
         where: {
           id
@@ -151,7 +151,7 @@ const ItemController = {
       return response.json({ item })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -171,7 +171,7 @@ const ItemController = {
       })
 
       let allNumberRatings = (Number(item?.rating?.one_star) * 1) + (Number(item?.rating?.two_star) * 2) + (Number(item?.rating?.three_star) * 3) + (Number(item?.rating?.four_star) * 4) + (Number(item?.rating?.five_star) * 5)
-      let allRatings = Number(item?.rating?.one_star) + Number(item?.rating?.two_star) + Number(item?.rating?.three_star) + Number(item?.rating?.four_star)+ Number(item?.rating?.five_star)
+      let allRatings = Number(item?.rating?.one_star) + Number(item?.rating?.two_star) + Number(item?.rating?.three_star) + Number(item?.rating?.four_star) + Number(item?.rating?.five_star)
 
       return response.status(200).json({
         ratings: {
@@ -180,12 +180,12 @@ const ItemController = {
           three_star: item?.rating?.three_star,
           four_star: item?.rating?.four_star,
           five_star: item?.rating?.five_star,
-          average: Math.floor(allNumberRatings / allRatings)  
+          average: Math.floor(allNumberRatings / allRatings)
         }
       })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -203,7 +203,7 @@ const ItemController = {
       return response.status(302).json({ items })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -213,7 +213,7 @@ const ItemController = {
     let { quantity } = request.body
 
     try {
-      if(request.query.name) {
+      if (request.query.name) {
         // /item?name=headset
         const items = await prisma.item.findMany({
           where: {
@@ -232,7 +232,7 @@ const ItemController = {
         return response.status(200).json({ items })
       }
 
-      if(request.query.name && request.query.sort == "desc") {
+      if (request.query.name && request.query.sort == "desc") {
         const items = await prisma.item.findMany({
           orderBy: [{
             name: "desc"
@@ -246,7 +246,7 @@ const ItemController = {
         })
 
         return response.status(200).json({ items })
-      } else if(request.query.name && request.query.sort == "asc") {
+      } else if (request.query.name && request.query.sort == "asc") {
         // /item?name=headset&sort=asc
         const items = await prisma.item.findMany({
           orderBy: [{
@@ -263,9 +263,9 @@ const ItemController = {
         return response.status(200).json({ items })
       }
 
-      if(!quantity || quantity == null || quantity == undefined) {
+      if (!quantity || quantity == null || quantity == undefined) {
         quantity = 0
-      } 
+      }
 
       const items = await prisma.item.findMany({
         include: {
@@ -279,7 +279,7 @@ const ItemController = {
       return response.status(302).json({ items })
 
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   },
@@ -307,9 +307,9 @@ const ItemController = {
       })
 
       return response.status(200).json({ item })
-      
+
     } catch (error) {
-      
+
       return response.status(500).json({ error: error.name, details: { message: error.message } })
     }
   }

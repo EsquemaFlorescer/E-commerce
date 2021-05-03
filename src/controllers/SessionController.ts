@@ -24,10 +24,10 @@ const SessionController = {
         auth: true,
         jwt: true,
         user: {
-          uuid: JWTHeader["id"],  
-          name: JWTHeader["name"],  
-          email: JWTHeader["email"],  
-          password: JWTHeader["password"],  
+          uuid: JWTHeader["id"],
+          name: JWTHeader["name"],
+          email: JWTHeader["email"],
+          password: JWTHeader["password"],
         },
         refresh_token
       })
@@ -38,11 +38,11 @@ const SessionController = {
         }
       })
 
-      if(user.length == 0) {
+      if (user.length == 0) {
         return response.status(404).json({ auth: false, message: "Wrong e-mail!" })
       }
 
-      if(await compare(password, user[0].password) != true) {
+      if (await compare(password, user[0].password) != true) {
         return response.status(404).json({ auth: false, message: "Wrong password!" })
       }
 

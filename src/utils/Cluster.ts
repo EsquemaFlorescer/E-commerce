@@ -5,11 +5,11 @@ import { isMaster, fork, on } from "cluster"
 function Cluster(bool: boolean) {
   const port = process.env.PORT
 
-  if(bool == true) {
-    if(isMaster) {
+  if (bool == true) {
+    if (isMaster) {
       const cpuCores = cpus().length
 
-      for(let i = 0; i < cpuCores; i += 0.5) {
+      for (let i = 0; i < cpuCores; i += 0.5) {
         fork()
       }
 

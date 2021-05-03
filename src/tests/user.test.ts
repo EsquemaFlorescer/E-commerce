@@ -4,7 +4,7 @@ import { app } from "../app"
 describe("User Register", () => {
   it("should create new user entity", async () => {
   })
-  
+
   it("should receive a 200 or 400 status code when creating new user", async () => {
   })
 
