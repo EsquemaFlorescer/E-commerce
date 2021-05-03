@@ -28,7 +28,14 @@ describe("User Register", () => {
     expect(user.password).toEqual(user_test.password)
   })
 
-  it("should receive a 200 or 400 status code when creating new user", async () => {
+  it("should lists all users", async () => {
+    const response = await request(app)
+      .post("/user/list/0")
+      .send({
+        quantity: 1 
+      })
+
+    expect(response.status).toBe(200)
   })
 
   it("should receive JWT_ACESS_TOKEN", async () => {
