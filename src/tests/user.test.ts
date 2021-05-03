@@ -1,8 +1,31 @@
 import request from "supertest"
+import { prisma } from "../prisma"
 import { app } from "../app"
+
+const user_test = {
+  name: "vitor",
+  email: "gouveia",
+  cpf: "000.000.000-00",
+  password: "12345"
+}
 
 describe("User Register", () => {
   it("should create new user entity", async () => {
+    let { name, email, cpf, password } = user_test
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        cpf,
+        password
+      }
+    })
+
+    expect(user.name).toEqual(user_test.name)
+    expect(user.email).toEqual(user_test.email)
+    expect(user.cpf).toEqual(user_test.cpf)
+    expect(user.password).toEqual(user_test.password)
   })
 
   it("should receive a 200 or 400 status code when creating new user", async () => {
