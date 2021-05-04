@@ -1,0 +1,106 @@
+.homeContainer {
+  width: 100%;
+  height: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+  padding: 0 24px;
+  
+  display: grid;
+  grid-template-columns: 280px calc(100% - 320px);
+  grid-auto-flow: row;
+  gap: 40px;
+}
+
+.homeContainer aside {
+  width: 100%;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  position: sticky;
+  top: 0;
+  padding-top: 36px;
+  transition: transform 0.5s ease 0;
+  height: calc(100vh - 1px)
+}
+
+.homeContainer aside div {
+  width: 100%
+}
+
+.homeContainer aside div a {
+  width: 100%;
+  padding-left: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.homeContainer aside nav {
+  width: 100%;
+  padding-top: 24px;
+  align-self: flex-start;
+  flex: 1 1 0%;
+}
+
+.homeContainer aside nav ul {
+  width: 100%;
+  list-style: none;
+  padding-left: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.homeContainer aside nav ul li {
+  font-size: 15px;
+  width: 100%;
+  padding: 0px 20px;
+  cursor: pointer;
+  transition: all 200ms ease-in-out 0s;
+}
+
+.homeContainer aside nav ul li a {
+  font-size: 15px;
+  color: rgb(108, 108, 128);
+  background-color: rgb(255, 255, 255);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: normal;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  margin: 0px auto;
+  transition: all 0.2s ease 0s;
+}
+
+.homeContainer aside nav ul li[aria-label="title"] {
+  padding-left: 30px;
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: rgb(61, 61, 77);
+  letter-spacing: 0.142em;
+  cursor: auto;
+}
+
+.homeContainer aside nav ul li a:hover {
+  color: rgb(130, 87, 230);
+}
+
+.homeContainer aside nav ul li a.active-link {
+  color: rgb(130, 87, 230);
+  background-color: rgb(242, 242, 250);
+}
