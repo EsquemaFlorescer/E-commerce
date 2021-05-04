@@ -169,6 +169,7 @@
   -webkit-box-pack: start;
   justify-content: flex-start;
   position: relative;
+  overflow-y: scroll;
 }
 
 .homeContainer main header {
