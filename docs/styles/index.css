@@ -25,7 +25,7 @@
   position: sticky;
   top: 0;
   padding-top: 36px;
-  transition: transform 0.5s ease 0;
+  transition: all 0.5s ease;
   height: calc(100vh - 1px)
 }
 
@@ -44,6 +44,7 @@
 .homeContainer aside nav {
   width: 100%;
   padding-top: 24px;
+  padding-bottom: 24px;
   align-self: flex-start;
   flex: 1 1 0%;
 }
@@ -103,4 +104,139 @@
 .homeContainer aside nav ul li a.active-link {
   color: rgb(130, 87, 230);
   background-color: rgb(242, 242, 250);
+}
+
+@media (max-width: 780px) {
+  .homeContainer aside {
+    max-width: 75%;
+    min-width: auto;
+    z-index: 1001;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    padding-top: 32px;
+    background: rgb(255, 255, 255);
+    transform: translate3d(-100%, 0px, 0px);
+  }
+}
+
+@media (min-width: 780px) {
+  .homeContainer main header {
+    display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .homeContainer main section {
+    max-width: 100%;
+    padding-right: 0px;
+    order: 3;
+  }
+
+  .homeContainer main div {
+    position: relative;
+    top: auto;
+    order: 0;
+    max-width: 100%;
+    margin-left: 0px;
+    padding-top: 0px;
+  }
+}
+
+.homeContainer main {
+  height: 100%;
+  padding-top: 36px;
+  width: 100%;
+  display: flex;
+  -webkit-box-pack: start;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.homeContainer main header {
+  height: 40px;
+  margin-bottom: 24px;
+}
+
+.homeContainer main header button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-right: 16px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.homeContainer main header h2 {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  font-size: 18px;
+}
+
+.homeContainer main article {
+  width: 100%;
+  max-width: calc(75% - 64px);
+  padding-right: 64px;
+}
+
+.homeContainer main article h1 {
+  overflow-wrap: break-word;
+  position: relative;
+}
+
+.homeContainer main article h2 {
+  overflow-wrap: break-word;
+  position: relative;
+}
+
+.homeContainer main article section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 48px 0px;
+  width: 100%;
+}
+
+.homeContainer main article section div {
+  transition: all 200ms ease 0s;
+  margin-left: auto;
+}
+
+.homeContainer main article section div a {
+  display: flex;
+  text-decoration: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.homeContainer main article section div a div p {
+  letter-spacing: 0.142em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0px;
+  color: rgb(108, 108, 128);
+}
+
+.homeContainer main article section div a div h3 {
+  color: rgb(108, 108, 128);
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  font-size: 16px;
+}
+
+.homeContainer main div {
+  position: sticky;
+  top: 0px;
+  order: 2;
+  padding-top: 72px;
+  max-height: calc(100vh - 72px);
+  overflow: hidden auto;
+  width: 100%;
+  max-width: 200px;
 }

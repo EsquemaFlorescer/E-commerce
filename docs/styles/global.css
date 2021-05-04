@@ -21,3 +21,28 @@ a {
 ul li, ol li {
   line-height: 28px;
 }
+
+h1 {
+  font-size: 32px;
+  color: rgb(61, 61, 77);
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h2, h3, h4, h5, h6 {
+  color: rgb(61, 61, 77);
+  margin: 24px 0px 16px;
+  font-weight: bold;
+}
+
+p {
+  color: rgb(108, 108, 128);
+  font-size: 16px;
+  line-height: 28px;
+  margin-bottom: 16px;
+  font-weight: 400;
+}
