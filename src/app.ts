@@ -13,5 +13,4 @@ app.use(cors({ origin: process.env.APP_URL }))
 app.use(helmet())
 app.use(router)
 
-
 export { app }

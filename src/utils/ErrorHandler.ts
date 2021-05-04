@@ -1,7 +1,7 @@
-function handle(err: Error, errorMessage: string) {
+function handle(err: Error) {
   if (err) {
     console.log(err.name)
-    throw new Error(errorMessage)
+    throw new Error(err.message)
   }
 }
 
