@@ -18,7 +18,7 @@ const createComponent = async (component, data) => {
     })
   })
 
-  const buttons = document.querySelectorAll("button")
+  const buttons = document.querySelectorAll(".sidebar-toggle")
   buttons.forEach(button => {
     button.addEventListener("click", () => {
       document.querySelector(".homeContainer aside").classList.toggle("show")
@@ -30,6 +30,19 @@ const createComponent = async (component, data) => {
   document.querySelector(".overlay").addEventListener("click", () => {
     document.querySelector(".homeContainer aside").classList.remove("show")
     document.querySelector(".overlay").style.display = "none"
+  })
+
+  const clipboardButtons = document.querySelectorAll(".clipboard")
+  clipboardButtons.forEach(button => {
+    button.addEventListener("click", async event => {
+      // get text of code element
+      const span = event.path[2].childNodes[1].childNodes[0].textContent
+      const text = event.path[2].childNodes[1].childNodes[1].textContent
+      const fullText = `${span}${text}`
+
+      // copy to clipboard
+      await navigator.clipboard.writeText(fullText)
+    })
   })
 
   // addEventListener("scroll", e => console.log(e.path[1].scrollY))
