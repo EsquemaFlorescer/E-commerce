@@ -1,0 +1,15 @@
+.background-highlight {
+  display: inline-block;
+  line-height: 1;
+  padding: 0.2em;
+  background-color: rgb(68, 71, 90);
+  color: rgb(73 251 112);
+  font-size: 14px;
+  border-radius: 3px;
+  font-feature-settings: "clig" 0, "calt" 0;
+  font-variant: no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual;
+}
+
+.background-highlight span {
+  color: rgb(120, 209, 225);
+}

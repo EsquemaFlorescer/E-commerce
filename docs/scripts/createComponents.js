@@ -31,6 +31,8 @@ const createComponent = async (component, data) => {
     document.querySelector(".homeContainer aside").classList.remove("show")
     document.querySelector(".overlay").style.display = "none"
   })
+
+  // addEventListener("scroll", e => console.log(e.path[1].scrollY))
 }
 
 export { getComponent }

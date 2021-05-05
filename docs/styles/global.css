@@ -18,6 +18,10 @@ a {
   text-decoration: none;
 }
 
+a.underline {
+  text-decoration: underline;
+}
+
 ul li, ol li {
   line-height: 28px;
 }
