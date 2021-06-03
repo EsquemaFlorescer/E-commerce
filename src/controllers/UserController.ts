@@ -36,12 +36,7 @@ const UserController = {
         }
       })
 
-      const access_token = jwt.sign({
-        id: user.id,
-        name,
-        email,
-        password: user.password
-      }, String(process.env.JWT_ACCESS_TOKEN), { expiresIn: "24h" })
+      const access_token = auth.create(user, "24h")
 
       response.header("authorization", access_token)
 
