@@ -21,7 +21,7 @@ const UserController = {
         }
       })
 
-      if (userExists.length > 1) {
+      if (userExists.length > 0) {
         return response.status(400).json({
           auth: false, message: "User already exists", user: userExists
         })
