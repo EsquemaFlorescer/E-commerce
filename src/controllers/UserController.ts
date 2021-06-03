@@ -6,6 +6,8 @@ import { hash } from "bcrypt"
 import { prisma } from "../prisma"
 import { User } from "@prisma/client"
 
+import { auth } from "@auth/JWT"
+
 const UserController = {
   async create(request: Request, response: Response) {
     let { name, email, cpf, password }: User = request.body
@@ -13,7 +15,7 @@ const UserController = {
     try {
       password = await hash(password, 10)
 
-      const userExists = await prisma.user.findMany({
+      const userAlreadyExists = await prisma.user.findMany({
         where: {
           email: {
             equals: email
@@ -21,9 +23,9 @@ const UserController = {
         }
       })
 
-      if (userExists.length > 0) {
+      if (userAlreadyExists.length > 0) {
         return response.status(400).json({
-          auth: false, message: "User already exists", user: userExists
+          auth: false, message: "User already exists", user: userAlreadyExists
         })
       }
 
@@ -58,7 +60,8 @@ const UserController = {
     }
 
     try {
-      jwt.verify(String(authorizationHeader), String(process.env.JWT_REFRESH_TOKEN))
+      auth.verify(authorizationHeader)
+
       const user = await prisma.user.update({
         where: {
           id
@@ -114,14 +117,15 @@ const UserController = {
   async delete(request: Request, response: Response) {
     const { id } = request.body
 
-    const authHeader = request.headers.authorization
+    const authorizationHeader = request.headers.authorization
 
-    if (!authHeader) {
+    if (!authorizationHeader) {
       return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
     }
 
     try {
-      const JWTHeader = jwt.verify(String(authHeader), String(process.env.JWT_REFRESH_TOKEN))
+      const JWTHeader = auth.verify(authorizationHeader)
+
       await prisma.address.deleteMany({
         where: {
           userId: id
