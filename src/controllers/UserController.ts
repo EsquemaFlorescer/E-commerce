@@ -11,24 +11,25 @@ import { handle } from "@utils/ErrorHandler"
 const UserController = {
   async create(request: Request, response: Response) {
     let { name, email, cpf, password }: User = request.body
-
+    
     try {
       password = await hash(password, 10)
-
+      
+      // searches users with that e-mail
       const userAlreadyExists = await prisma.user.findMany({
         where: {
-          email: {
-            equals: email
-          }
+          email
         }
       })
-
+      
+      // checks if user with that email already exists
       if (userAlreadyExists.length > 0) {
         return response.status(400).json({
           auth: false, message: "User already exists", user: userAlreadyExists
         })
       }
-
+      
+      // stores user in the database
       const user = await prisma.user.create({
         data: {
           name,
@@ -37,36 +38,44 @@ const UserController = {
           password
         }
       })
-
+      
+      // creates JWT access token
       const access_token = auth.create(user, "24h")
-
+      
+      // sends JWT through headers
       response.header("authorization", access_token)
-
+      
+      // respond with user information
       return response.status(201).json({ auth: true, access_token, user, message: "User created with success!" })
-
+      
     } catch (error) {
-
-      return response.status(500).json({ error: error.name, details: { message: error.message } })
+      
+      // in case of error, send error details
+      return handle.express(500, { auth: false, message: "Failed to create user." })
     }
   },
-
+  
   async update(request: Request, response: Response) {
     const { id, name, last_name, cpf, email, password } = request.body
-
+    
+    // searches a JWT authorization token in client's headers
     const authorizationHeader = request.headers.authorization
-
+    
+    // if JWT authorization token doesn't exist, send error
     if (!authorizationHeader) {
       return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
     }
-
+    
     try {
+      // check if JWT authorization token is valid
       auth.verify(authorizationHeader)
-
+      
+      // updates user
       const user = await prisma.user.update({
         where: {
           id
         },
-
+        
         data: {
           name,
           last_name,
@@ -74,25 +83,27 @@ const UserController = {
           email,
           password
         },
-
+        
         include: {
           address: true
         }
       })
-
-      return response.status(200).json({ auth: true, user, message: "User edited with success!" })
-
+      
+      // respond with user information
+      return response.status(200).json({ auth: true, user, message: "User updated with success!" })
+      
     } catch (error) {
-
+      
       // in case of error send error details
       return handle.express(400, { auth: false, message: "Failed to update user." })
     }
   },
-
+  
   async createAddress(request: Request, response: Response) {
     const { userId, postalCode, city, state, street, number } = request.body
-
+    
     try {
+      // create user related address
       const address = await prisma.address.create({
         data: {
           userId,
@@ -103,49 +114,55 @@ const UserController = {
           number
         },
       })
-
+      
+      // respond with address information
       return response.status(200).json({ address })
-
+      
     } catch (error) {
-
+      
       // in case of error send error details
       return handle.express(400, { message: "Failed to create address." })
     }
   },
-
+  
   async delete(request: Request, response: Response) {
     const { id } = request.body
-
+    
+    // searches a JWT authorization token in client's headers
     const authorizationHeader = request.headers.authorization
-
+    
     if (!authorizationHeader) {
+      // if JWT authorization token doesn't exist, send error
       return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
     }
-
+    
     try {
       const JWTHeader = auth.verify(authorizationHeader)
 
+      // deletes all users addresses to avoid Prisma error
       await prisma.address.deleteMany({
         where: {
           userId: id
         }
       })
-
+      
+      // deletes user
       const user = await prisma.user.delete({
         where: {
           id
         }
       })
-
-      return response.status(200).json({ auth: true, JWTHeader, user, message: "User deleted with success!" })
-
+      
+      // respond with user information
+      return response.status(200).json({ auth: false, user, message: "User deleted with success!" })
+      
     } catch (error) {
-
+      
       // in case of error send error details
       return handle.express(500, { auth: false, message: "failed to delete user." })
     }
   },
-
+  
   async list(request: Request, response: Response) {
     let { page } = request.params
     let { quantity } = request.body
