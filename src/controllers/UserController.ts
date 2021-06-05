@@ -137,8 +137,9 @@ const UserController = {
     }
     
     try {
-      const JWTHeader = auth.verify(authorizationHeader)
-
+      // check if JWT authorization token is valid
+      auth.verify(authorizationHeader)
+      
       // deletes all users addresses to avoid Prisma error
       await prisma.address.deleteMany({
         where: {
