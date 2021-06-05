@@ -6,6 +6,7 @@ import { prisma } from "../prisma"
 import { User } from "@prisma/client"
 
 import { auth } from "@auth/JWT"
+import { handle } from "@utils/ErrorHandler"
 
 const UserController = {
   async create(request: Request, response: Response) {
