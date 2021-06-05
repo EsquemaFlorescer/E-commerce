@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
 
-import jwt from "jsonwebtoken"
 import { hash } from "bcrypt"
 
 import { prisma } from "../prisma"
