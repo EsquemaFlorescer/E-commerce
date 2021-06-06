@@ -7,6 +7,7 @@ import { User } from "@prisma/client"
 
 import { auth } from "@auth/JWT"
 import { handle } from "@utils/ErrorHandler"
+import { generateHash } from "@utils/Hash"
 
 const UserController = {
   async create(request: Request, response: Response) {
@@ -14,8 +15,8 @@ const UserController = {
     
     try {
       // TODO: integrate this with discord user hash
-      let userhash = Math.floor(Math.random() * (9999 * Number("0001") + 1) + Number("0001")) // generates random number between 0001 and 9999
-
+      let userhash = generateHash(4)
+      
       // searches users with that hash and name
       const userHashAlreadyExists = await prisma.user.findMany({
         where: {
@@ -23,7 +24,7 @@ const UserController = {
           userhash: String(userhash)
         }
       })
-
+      
       // if user with name and hash already exist add 1 to userhash
       if(userHashAlreadyExists) {
         userhash = Math.floor(Math.random() * (9999 * Number("0001") + 1) + Number("0001"))
@@ -44,13 +45,13 @@ const UserController = {
           auth: false, message: "User already exists", user: userAlreadyExists
         })
       }
-
+      
       
       // stores user in the database
       const user = await prisma.user.create({
         data: {
           name,
-          last_name: "",
+          lastname: "",
           username: `${name}#${userhash}`,
           userhash: String(userhash),
           cpf,
@@ -76,7 +77,7 @@ const UserController = {
   },
   
   async update(request: Request, response: Response) {
-    const { id, name, last_name, cpf, email, password } = request.body
+    const { id, name, lastname, username, cpf, email, password } = request.body
     
     // searches a JWT authorization token in client's headers
     const authorizationHeader = request.headers.authorization
@@ -87,6 +88,16 @@ const UserController = {
     }
     
     try {
+      const userInfo = await prisma.user.findUnique({
+        where: {
+          id
+        },
+
+        select: {
+          userhash: true
+        }
+      })
+
       // check if JWT authorization token is valid
       auth.verify(authorizationHeader)
       
@@ -98,14 +109,11 @@ const UserController = {
         
         data: {
           name,
-          last_name,
+          lastname,
+          username: `${username}#${userInfo?.userhash}`,
           cpf,
           email,
           password
-        },
-        
-        include: {
-          address: true
         }
       })
       
@@ -199,18 +207,18 @@ const UserController = {
             id: userId
           }
         })
-
+        
         return response.status(200).json(user)
       }
-
+      
       if(!page && !quantity) {
         const users = await prisma.user.findMany()
         
         return response.json(users)
       }
-
+      
       if(name != "undefined") {
-
+        
         if(sort != "undefined") {
           const users = await prisma.user.findMany({
             orderBy: [{
@@ -227,7 +235,7 @@ const UserController = {
           
           return response.status(200).json(users)
         }
-
+        
         const users = await prisma.user.findMany({
           where: {
             name: {
@@ -245,7 +253,7 @@ const UserController = {
         
         return response.status(200).json(users)
       }
-
+      
       if(name == "undefined" && created_at == "true" && sort != "undefined") {
         const users = await prisma.user.findMany({
           orderBy: [{
@@ -262,12 +270,12 @@ const UserController = {
         
         return response.status(200).json(users)
       }
-
+      
       const users = await prisma.user.findMany({
         include: {
           address: true
         },
-
+        
         take: quantity,
         skip: page * quantity
       })
