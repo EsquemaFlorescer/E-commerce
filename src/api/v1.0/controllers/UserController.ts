@@ -124,7 +124,7 @@ const UserController = {
       }
 
       // check if JWT authorization token is valid
-      auth.verify(authorizationHeader)
+      auth.verify()
       
       // updates user
       const user = await prisma.user.update({
@@ -191,7 +191,7 @@ const UserController = {
     
     try {
       // check if JWT authorization token is valid
-      auth.verify(authorizationHeader)
+      auth.verify()
       
       // deletes all users addresses to avoid Prisma error
       await prisma.address.deleteMany({
