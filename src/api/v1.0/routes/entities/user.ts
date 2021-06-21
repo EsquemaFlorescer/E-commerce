@@ -1,19 +1,19 @@
 import { Router } from "express"
 
-import { UserController } from "@controllers/UserController"
-import { DashboardController } from "@controllers/DashboardController"
-import { SessionController } from "@controllers/SessionController"
+import { UserController, SessionController } from "@controllers"
+
+import authenticate from "../middlewares/auth"
 
 const router = Router()
 
-router.post("/user", UserController.create) /* Creates user */
-router.get("/user/:id?", UserController.list) /* Lists users */
-router.patch("/user/:id?", UserController.update) /* Updates an especific user */
-router.delete("/user/:id?", UserController.delete) /* Deletes an especific user */
+router.post("/", UserController.create) /* Creates user */
+router.get("/:id?", UserController.list) /* Lists users */
 
-router.delete("/dashboard/user", DashboardController.deleteUser) /* Deletes a user with admin permissions */
-router.post("/user/address", UserController.createAddress) /* Creates an address for an especific user */
-router.post("/user/login", SessionController.create) /* Authenticate user / Login */
+router.post("/login", SessionController.create) /* Authenticate user / Login */
 
+/** Require JWT to execute */
+router.patch("/:id?", authenticate, UserController.update) /* Updates an especific user */
+router.delete("/:id?", authenticate, UserController.delete) /* Deletes an especific user */
+router.post("/address", authenticate, UserController.createAddress) /* Creates an address for an especific user */
 
 export default router
