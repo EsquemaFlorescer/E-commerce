@@ -8,6 +8,13 @@ import { hash, genSalt } from "bcrypt"
 import auth from "@auth"
 import { handle } from "@utils/ErrorHandler"
 
+type createUserResponse = {
+  userHashAlreadyExists: string
+  userAlreadyExists: string
+  access_token: string
+  user: User
+}
+
 export function randomNumber(num: number) {
   var add = 1
   var max = 12 - add
@@ -23,67 +30,89 @@ export function randomNumber(num: number) {
   return ("" + number).substring(add)
 }
 
-export default async function create(request: Request, response: Response) {
-  let { name, email, cpf, password }: User = request.body
-  
-  try {    
-    const users = await prisma.user.findMany({
-      select: {
-        name: true,
-        userhash: true,
-        email: true
-      }
-    })
-
+const create = async ({ name, email, cpf, password }: User) => {
+  try {
     // TODO: integrate this with discord user hash
     let userhash = randomNumber(4)
     
     // searcher for duplicate user hash
-    const userHashAlreadyExists = users.filter(user => user.name == name && user.userhash == userhash)
+    const userHashAlreadyExists = await prisma.user.findMany({
+      where: {
+        name,
+        userhash
+      }
+    })
     
     // searches users with that e-mail
-    const userAlreadyExists = users.filter(user => user.email == email)
-    
-    // if user with name and hash already exist generate another hash
-    if(userHashAlreadyExists) {
-      userhash = randomNumber(4)
-    }
-    
-    // checks if user with that email already exists
-    if (userAlreadyExists.length) {
-      return response.status(400).json({
-        auth: false, message: "User already exists", user: userAlreadyExists
-      })
-    }
-    
+    const userAlreadyExists = await prisma.user.findMany({
+      where: {
+        email
+      }
+    })
+
     const salt = await genSalt(10)
     password = await hash(password, salt)
-    
+
+    const username = `${name}${randomNumber(2)}`
+
     // stores user in the database
     const user = await prisma.user.create({
       data: {
         name,
-        lastname: "",
-        username: `${name}${randomNumber(2)}`,
-        userhash: String(userhash),
-        cpf,
         email,
-        password
+        cpf,
+        password,
+        username,
+        userhash,
       }
     })
     
     // creates JWT access token
     const access_token = auth.create(user, "24h")
     
+    return {
+      userHashAlreadyExists,
+      userAlreadyExists,
+      access_token,
+      user
+    }
+  } catch (error) {
+    return error
+  }
+}
+
+export default async (request: Request, response: Response) => {
+  try {
+    const { 
+      userHashAlreadyExists,
+      userAlreadyExists,
+      access_token,
+      user 
+    }: createUserResponse = await create(request.body)
+
     // sends JWT through headers
     response.header("authorization", access_token)
+        
+    // if user with name and hash already exist generate another hash
+    userHashAlreadyExists && (
+      user.userhash = randomNumber(4)
+    )
     
+    // checks if user with that email already exists
+    if (userAlreadyExists.length) {
+      return response.status(400).json("User already exists")
+    }
+
     // respond with user information
-    return response.status(201).json({ auth: true, access_token, user, message: "User created with success!" })
-    
+    return response.status(201).json({ 
+      access_token,
+      user,
+      message: "User created with success!"
+    })
+
   } catch (error) {
-    
-    // in case of error, send error details
-    return handle.express(500, { auth: false, message: "Failed to create user." })
+    return handle.express(400, "Failed to create user.")
   }
+  // in case of error, send error details
+  // return handle.express(500, { auth: false, message: "Failed to create user." })
 }

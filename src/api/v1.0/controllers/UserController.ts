@@ -9,7 +9,7 @@ import CreateUser, { randomNumber } from "./user/CreateUser"
 
 const UserController = {
   async create(request: Request, response: Response) {
-    CreateUser(request, response)
+    await CreateUser(request, response)
   },
   
   async update(request: Request, response: Response) {
