@@ -6,7 +6,7 @@ type userType = {
   email: string
 }
 
-export function createToken(user: userType, expiresIn: string) {
+export const createToken = (user: userType, expiresIn: string) => {
   const JWT_ACCESS_TOKEN: string = String(process.env.JWT_ACCESS_TOKEN)
   
   const access_token = sign(user, JWT_ACCESS_TOKEN, {
