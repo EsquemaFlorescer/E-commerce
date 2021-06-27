@@ -5,87 +5,18 @@ import { prisma } from "@src/prisma"
 import auth from "@auth"
 import { handle } from "@utils/ErrorHandler"
 
-import CreateUser, { randomNumber } from "./user/CreateUser"
+import CreateUser from "./user/CreateUser"
+import UpdateUser from "./user/UpdateUser"
 
 const UserController = {
   async create(request: Request, response: Response) {
+    // executes create user service
     await CreateUser(request, response)
   },
   
   async update(request: Request, response: Response) {
-    const { name, lastname, username, userhash, cpf, email, password } = request.body
-    const { id } = request.params
-    
-    // searches a JWT authorization token in client's headers
-    const authorizationHeader = request.headers.authorization
-    
-    // if JWT authorization token doesn't exist, send error
-    if (!authorizationHeader) {
-      return response.status(400).json({ auth: false, message: "No JWT token was found! Redirect to login" })
-    }
-
-    try {
-      // searches user with the same username and userhash
-      const usernameAlreadyExists = await prisma.user.findMany({
-        where: {
-          username,
-          userhash
-        },
-
-        // select less user properties to reduce response time
-        select: {
-          id: true,
-          username: true,
-          userhash: true
-        }
-        //return [...user]
-      })
-
-      // responds if you choose the same name twice
-      if(usernameAlreadyExists[0]?.username == username) {
-        return response.status(400).json({
-          message: "You took this username"
-        })
-      }
-
-      // if there is a user with the same username and userhash respond with other available usernames
-      if(usernameAlreadyExists.length > 0) {
-        return response.status(400).json({ 
-          message: "This username is already taken",
-          available_usernames: [
-            { username: `${username}${randomNumber(2)}` },
-            { username: `${name}${randomNumber(2)}` }
-          ]
-        })
-      }
-
-      // check if JWT authorization token is valid
-      // auth.verify()
-      
-      // updates user
-      const user = await prisma.user.update({
-        where: {
-          id
-        },
-        
-        data: {
-          name,
-          lastname,
-          username: `${username}`,
-          cpf,
-          email,
-          password
-        }
-      })
-      
-      // respond with user information
-      return response.status(200).json({ auth: true, user, message: "User updated with success!" })
-      
-    } catch (error) {
-      
-      // in case of error send error details
-      return handle.express(400, { auth: false, message: "Failed to update user." })
-    }
+    // executes update user service
+    await UpdateUser(request, response)
   },
   
   async createAddress(request: Request, response: Response) {
