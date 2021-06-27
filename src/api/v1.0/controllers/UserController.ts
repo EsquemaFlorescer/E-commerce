@@ -5,7 +5,7 @@ import { prisma } from "@src/prisma"
 import auth from "@auth"
 import { handle } from "@utils/ErrorHandler"
 
-import CreateUser from "./user/CreateUser"
+import CreateUser, { randomNumber } from "./user/CreateUser"
 
 const UserController = {
   async create(request: Request, response: Response) {
@@ -53,8 +53,8 @@ const UserController = {
         return response.status(400).json({ 
           message: "This username is already taken",
           available_usernames: [
-            { username: `${username}${generateHash(2)}` },
-            { username: `${name}${generateHash(2)}` }
+            { username: `${username}${randomNumber(2)}` },
+            { username: `${name}${randomNumber(2)}` }
           ]
         })
       }
