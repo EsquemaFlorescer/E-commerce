@@ -30,6 +30,7 @@ export function randomNumber(num: number) {
   return ("" + number).substring(add)
 }
 
+// create user service is responsible for authentication and some rules
 const create = async ({ name, email, cpf, password }: User) => {
   try {
     // TODO: integrate this with discord user hash
@@ -81,6 +82,7 @@ const create = async ({ name, email, cpf, password }: User) => {
   }
 }
 
+// just return everything from create user service
 export default async (request: Request, response: Response) => {
   try {
     const { 
@@ -111,8 +113,7 @@ export default async (request: Request, response: Response) => {
     })
 
   } catch (error) {
+    // in case of error, send error details
     return handle.express(400, "Failed to create user.")
   }
-  // in case of error, send error details
-  // return handle.express(500, { auth: false, message: "Failed to create user." })
 }
