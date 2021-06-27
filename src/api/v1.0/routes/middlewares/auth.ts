@@ -4,8 +4,12 @@ import { Request, Response, NextFunction } from "express"
 
 export default function (request: Request, response: Response, next: NextFunction) {
   try {
+    // get JWT refresh token secret
     const JWT_REFRESH_TOKEN = String(process.env.JWT_REFRESH_TOKEN)
-    const authHeader = request.headers["authorization"]
+
+    // get JWT refresh token from headers
+    const authHeader = request.headers.authorization
+    // remove Bearer prefix from token
     const token = String(authHeader && authHeader.split(" ")[1])
 
     verify(token, JWT_REFRESH_TOKEN)
