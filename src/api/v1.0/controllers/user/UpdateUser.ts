@@ -5,8 +5,6 @@ import { prisma } from "@src/prisma"
 
 import { hash, genSalt } from "bcrypt"
 
-import { handle } from "@utils/ErrorHandler"
-
 type updateUserResponse = {
   usernameAlreadyExists: User[]
   available_usernames: string
@@ -88,20 +86,27 @@ export default async (request: Request, response: Response) => {
     }: updateUserResponse = await update(request.params.id, request.body)
     
     if(usernameAlreadyExists.length) {
-      return response.status(400).json({
-        message: "Username already taken",
+      return ({
+        error: true,
+        status: 400,
+        message: "Username already taken.",
         available_usernames
       })
     }
     
     // respond with user information
-    return response.status(200).json({
+    return ({
+      status: 200,
       user,
       message: "User updated with success!"
     })
     
   } catch (error) {
     // in case of error, send error details
-    return handle.express(400, "Failed to create user.")
+    return ({
+      error: true,
+      status: 400,
+      message: "Failed to create user."
+    })
   }
 }
