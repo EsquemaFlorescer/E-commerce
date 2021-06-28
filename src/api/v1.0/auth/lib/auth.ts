@@ -1,4 +1,4 @@
-import { User } from "@prisma/client"
+import { User } from "../../entities/User"
 
 import { createToken } from "./token"
 
