@@ -1,9 +1,8 @@
 import { Request, Response} from "express"
 
-import { User } from "@prisma/client"
 import { prisma } from "@src/prisma"
 
-import { hash, genSalt } from "bcrypt"
+import { User, randomNumber } from "../../entities/User"
 
 import auth from "@auth"
 
@@ -14,28 +13,21 @@ type createUserResponse = {
   user: User
 }
 
-export function randomNumber(num: number) {
-  var add = 1
-  var max = 12 - add
-  
-  if(num > max) {
-    return randomNumber(max) + randomNumber(Number(num) - max)
-  }
-  
-  max = Math.pow(10, num + add)
-  var min = max / 10
-  var number = Math.floor(Math.random() * (max - min + 1)) + min
-  
-  return ("" + number).substring(add)
-}
-
 // create user service is responsible for authentication and some rules
-const create = async ({ name, email, cpf, password }: User) => {
+const create = async (userRequest: User) => {
   try {
-    // TODO: integrate this with discord user hash
-    let userhash = randomNumber(4)
-    
-    // searcher for duplicate user hash
+    // creates user
+    const {
+      id,
+      created_at,
+      name,
+      email,
+      password,
+      userhash,
+      username
+    } = new User(userRequest)
+
+    // searches for duplicate user hash
     const userHashAlreadyExists = await prisma.user.findMany({
       where: {
         name,
@@ -49,30 +41,24 @@ const create = async ({ name, email, cpf, password }: User) => {
         email
       }
     })
-
+    
     if(userAlreadyExists.length) {
       return {
         userAlreadyExists
       }
     }
-
-    const salt = await genSalt(10)
-    password = await hash(password, salt)
-
-    const username = `${name}${randomNumber(2)}`
-
     // stores user in the database
     const user = await prisma.user.create({
       data: {
+        id,
+        created_at,
         name,
-        email,
-        cpf,
-        password,
         username,
         userhash,
+        email,
+        password
       }
     })
-    
     // creates JWT access token
     const access_token = auth.create(user, "24h")
     
@@ -95,7 +81,7 @@ export default async (request: Request, response: Response) => {
       access_token,
       user 
     }: createUserResponse = await create(request.body)
-        
+
     // if user with name and hash already exist generate another hash
     userHashAlreadyExists && (
       user.userhash = randomNumber(4)
