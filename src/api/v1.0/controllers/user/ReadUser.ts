@@ -21,9 +21,8 @@ export class ReadUserService {
       let page: number = Number(query.page)
       let quantity: number = Number(query.quantity)
   
-      let name: string = String(query.name)
       let sort: any = String(query.sort)
-      let created_at: string = String(query.createdAt)
+      let property: any = String(query.property)
       
       // if id is supplied search user with that id
       if(id != undefined) {
@@ -34,62 +33,9 @@ export class ReadUserService {
         }
       }
   
-      // if no page and no quantity is supplied, list all users
+      // if no page and no quantity are supplied, list all users
       if(!page && !quantity) {
-        const users = await this.usersRepository.findAllUsers()
-  
-        return {
-          users
-        }
-      }
-  
-      //
-      if(name != "undefined") {
-        // search for users with "x" name and sort it
-        if(sort != "undefined") {
-          const users = await this.usersRepository.findAllUsers({
-            orderBy: [{
-              name: sort
-            }],
-            
-            // pagination
-            take: quantity,
-            skip: page * quantity
-          })
-  
-          return { 
-            users
-          }
-        }
-  
-        // search for users with "x" name
-        const users = await this.usersRepository.findAllUsers({
-          where: {
-            name: {
-              contains: name
-            }
-          },
-  
-          // pagination
-          take: quantity,
-          skip: page * quantity
-        })
-  
-        return {
-          users
-        }
-      }
-  
-      // if no name is supplied and created_at is supplied, sort by created_at
-      if(name == "undefined" && created_at == "true" && sort != "undefined") {
-        const users = await this.usersRepository.findAllUsers({
-          orderBy: [{
-            created_at: sort
-          }],
-  
-          take: quantity,
-          skip: page * quantity
-        })
+        const users = await this.usersRepository.findAll(property, sort)
   
         return {
           users
@@ -97,13 +43,12 @@ export class ReadUserService {
       }
   
       // if only page and quantity are supplied, sort users with pagination
-      const users = await this.usersRepository.findAllUsers({
-        take: quantity,
-        skip: page * quantity
-      })
-  
-      return {
-        users
+      if(page != undefined && sort != undefined) {
+        const users = await this.usersRepository.findAllPagination(page, quantity, property, sort)
+
+        return {
+          users
+        }
       }
     } catch (error) {
       return error
