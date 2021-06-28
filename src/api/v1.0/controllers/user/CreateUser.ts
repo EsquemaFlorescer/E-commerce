@@ -51,6 +51,12 @@ const create = async ({ name, email, cpf, password }: User) => {
       }
     })
 
+    if(userAlreadyExists.length) {
+      return {
+        userAlreadyExists
+      }
+    }
+
     const salt = await genSalt(10)
     password = await hash(password, salt)
 
@@ -101,9 +107,11 @@ export default async (request: Request, response: Response) => {
     )
     
     // checks if user with that email already exists
-    if (userAlreadyExists.length) {
-      return response.status(400).json("User already exists")
-    }
+    if (userAlreadyExists) return ({
+      error: true,
+      status: 400,
+      message: "User already exists."
+    })
 
     // respond with user information
     return response.status(201).json({ 
