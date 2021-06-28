@@ -1,91 +1,60 @@
 import { Request, Response} from "express"
 
-import { User } from "@prisma/client"
-import { prisma } from "@src/prisma"
+import { User } from "@api/v1.0/entities/User"
 
-import { hash, genSalt } from "bcrypt"
-
-type updateUserResponse = {
-  usernameAlreadyExists: User[]
-  available_usernames: string
-  user: User
-}
+import { IUsersRepository } from "@api/v1.0/repositories/IUsersRepository"
+import { SqliteUsersRepository } from "../../repositories/implementations/SqliteUsersRepository"
 
 // create user service is responsible for authentication and some rules
-const update = async (id: string, { name, lastname, username, cpf, email, password }: User) => {
-  try {
-    // middleware already checks for JWT
-    
-    const userInfo = await prisma.user.findUnique({
-      where: {
-        id
-      },
+export class UpdateUserService {
+  constructor(
+    private usersRepository: IUsersRepository
+  ) {}
+
+  async update(id: string, { name, lastname, username, cpf, email, password }: User) {
+    try {
+      // middleware already checks for JWT
+      const userInfo = await this.usersRepository.findById(id, "userhash")
+      const userhash = userInfo?.userhash
+      // searches user with the same username and userhash
+      const usernameAlreadyExists = await this.usersRepository.findUsername(username, userhash)
+      if(usernameAlreadyExists.length) return { usernameAlreadyExists }
       
-      select: {
-        userhash: true
-      }
-    })
-    
-    // searches user with the same username and userhash
-    const usernameAlreadyExists = await prisma.user.findMany({
-      where: {
-        username,
-        userhash: userInfo?.userhash
-      },
+      // if there is a user with the same username and userhash respond with other available usernames
+      const available_usernames = [
+        { username: `${username}${lastname}` },
+        { username: `${name}${lastname}` }
+      ]
       
-      // select less user properties to reduce response time
-      select: {
-        id: true,
-        username: true,
-        userhash: true
-      }
-    })
-    
-    // if there is a user with the same username and userhash respond with other available usernames
-    const available_usernames = [
-      { username: `${username}${lastname}` },
-      { username: `${name}${lastname}` }
-    ]
-    
-    const salt = await genSalt(10)
-    password = await hash(password, salt)
-    
-    // updates user
-    const user = await prisma.user.update({
-      where: {
-        id
-      },
+      // create user
+      const user = new User({ name, lastname, username, userhash, cpf, email, password }, id)
+
+      // updates user
+      await this.usersRepository.update(user)
       
-      data: {
-        name,
-        email,
-        lastname,
-        cpf,
-        username,
-        password
-      }
-    })
-    
-    return {
-      usernameAlreadyExists,
-      available_usernames,
-      user
+      return ({
+        available_usernames,
+        user
+      })
+    } catch (error) {
+      throw new Error(error.message)
     }
-  } catch (error) {
-    return error
   }
 }
 
 // just return everything from create user service
 export default async (request: Request, response: Response) => {
   try {
-    const {
+    const sqliteUsersRepository = new SqliteUsersRepository()
+    const updateUser = new UpdateUserService(sqliteUsersRepository)
+
+    const { 
       usernameAlreadyExists,
-      available_usernames,
+      available_usernames, 
       user
-    }: updateUserResponse = await update(request.params.id, request.body)
+    } = await updateUser.update(request.params.id, request.body)
     
-    if(usernameAlreadyExists.length) {
+    if(usernameAlreadyExists?.length) {
       return ({
         error: true,
         status: 400,
@@ -93,7 +62,7 @@ export default async (request: Request, response: Response) => {
         available_usernames
       })
     }
-    
+
     // respond with user information
     return ({
       status: 200,
