@@ -58,33 +58,7 @@ const UserController = {
       user
     })
   },
-  
-  async createAddress(request: Request, response: Response) {
-    const { userId, postalCode, city, state, street, number } = request.body
     
-    try {
-      // create user related address
-      const address = await prisma.address.create({
-        data: {
-          userId,
-          postalCode,
-          city,
-          state,
-          street,
-          number
-        },
-      })
-      
-      // respond with address information
-      return response.status(200).json({ address })
-      
-    } catch (error) {
-      
-      // in case of error send error details
-      return handle.express(400, { message: "Failed to create address." })
-    }
-  },
-  
   async delete(request: Request, response: Response) {
     const { id } = request.params
     
@@ -121,6 +95,32 @@ const UserController = {
       
       // in case of error send error details
       return handle.express(500, { auth: false, message: "failed to delete user." })
+    }
+  },
+  
+  async createAddress(request: Request, response: Response) {
+    const { userId, postalCode, city, state, street, number } = request.body
+    
+    try {
+      // create user related address
+      const address = await prisma.address.create({
+        data: {
+          userId,
+          postalCode,
+          city,
+          state,
+          street,
+          number
+        },
+      })
+      
+      // respond with address information
+      return response.status(200).json({ address })
+      
+    } catch (error) {
+      
+      // in case of error send error details
+      return handle.express(400, { message: "Failed to create address." })
     }
   }
 }
