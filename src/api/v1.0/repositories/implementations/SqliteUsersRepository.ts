@@ -23,12 +23,28 @@ export class SqliteUsersRepository implements IUsersRepository {
     return users
   }
   
-  async findById(id: string): Promise<UserType | null> {
+  async findById(id: string, select?: "userhash"): Promise<UserType | { userhash: string | undefined } | null> {
     const user = await prisma.user.findUnique({
       where: {
         id
       }
     })
+
+    if(select != undefined) {
+      const user = await prisma.user.findUnique({
+        where: {
+          id
+        },
+
+        select: {
+          [select]: true
+        }
+      })
+
+      return ({
+        userhash: user?.userhash
+      })
+    }
 
     return user
   }
@@ -59,7 +75,24 @@ export class SqliteUsersRepository implements IUsersRepository {
     return user
   }
 
-  async findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<{}> {
+  async findUsername(username: string, userhash: string | undefined): Promise<{ id: string, username: string, userhash: string }[]> {
+    const user = await prisma.user.findMany({
+      where: {
+        username,
+        userhash
+      },
+
+      select: {
+        id: true,
+        username: true,
+        userhash: true
+      }
+    })
+
+    return user
+  }
+
+  async findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<UserType[] | {}> {
     const users = await prisma.user.findMany({
       take: quantity,
       skip: quantity * page,
@@ -88,6 +121,18 @@ export class SqliteUsersRepository implements IUsersRepository {
     }
 
     return users
+  }
+
+  async update({ id, created_at, ...props }: User): Promise<void> {
+    await prisma.user.update({
+      where: {
+        id
+      },
+
+      data: {
+        ...props
+      }
+    })
   }
   
   async save(user: User): Promise<void> {

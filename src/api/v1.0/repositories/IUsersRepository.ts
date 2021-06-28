@@ -1,11 +1,12 @@
 import { User } from "@api/v1.0/entities/User"
 import { User as UserType } from "@prisma/client"
-
 export interface IUsersRepository {
   findAll(property?: string, sort?: "asc" | "desc" | string): Promise<UserType[]>
-  findById(id: string): Promise<UserType | null>
+  findById(id: string, select?: string): Promise<UserType | { userhash: string | undefined } | null>
   findByEmail(email: string): Promise<UserType[]>
   findUserhash(name: string, userhash: string): Promise<UserType[]>
-  findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<{}> 
+  findUsername(username: string, userhash: string | undefined): Promise<{ id: string; username: string; userhash: string; }[]>
+  findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<{}>
+  update({ id, created_at, ...props }: User): Promise<void> 
   save(user: User): Promise<void>
 }
