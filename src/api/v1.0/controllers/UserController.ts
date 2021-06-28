@@ -7,16 +7,56 @@ import { handle } from "@utils/ErrorHandler"
 
 import CreateUser from "./user/CreateUser"
 import UpdateUser from "./user/UpdateUser"
+import ReadUser from "./user/ReadUser"
 
 const UserController = {
   async create(request: Request, response: Response) {
     // executes create user service
-    await CreateUser(request, response)
+    const { error, message, status, access_token, user } = await CreateUser(request, response)
+
+    // in case of error
+    if(error) return response.status(status).json(message)
+
+    // sends JWT through headers
+    response.header("authorization", access_token)
+
+    // final response
+    return response.status(status).json({
+      message,
+      user,
+      access_token
+    })
+  },
+
+  async read(request: Request, response: Response) {
+    // executes read user service
+    const { error, message, status, users } = await ReadUser(request, response)
+
+    // in case of error
+    if(error) return response.status(status).json(message)
+
+    // final response
+    return response.status(status).json({
+      message,
+      users
+    })
   },
   
   async update(request: Request, response: Response) {
     // executes update user service
-    await UpdateUser(request, response)
+    const { error, message, status, available_usernames, user } = await UpdateUser(request, response)
+
+    // in case of error
+    if(error) return response.status(status).json({
+      message,
+      available_usernames
+    })
+
+    // final response
+    return response.status(status).json({
+      message,
+      user
+    })
   },
   
   async createAddress(request: Request, response: Response) {
@@ -81,101 +121,6 @@ const UserController = {
       
       // in case of error send error details
       return handle.express(500, { auth: false, message: "failed to delete user." })
-    }
-  },
-  
-  async list(request: Request, response: Response) {
-    let page = Number(request.query.page)
-    let quantity = Number(request.query.quantity)
-    let name = String(request.query.name)
-    let sort: any = String(request.query.sort) || "desc" || "asc"
-    let created_at = String(request.query.createdAt)
-    let userId = String(request.params.id)
-    
-    try {
-      if(userId != "undefined") {
-        const user = await prisma.user.findUnique({
-          where: {
-            id: userId
-          }
-        })
-        
-        return response.status(200).json(user)
-      }
-      
-      if(!page && !quantity) {
-        const users = await prisma.user.findMany()
-        
-        return response.json(users)
-      }
-      
-      if(name != "undefined") {
-        
-        if(sort != "undefined") {
-          const users = await prisma.user.findMany({
-            orderBy: [{
-              name: sort
-            }],
-            
-            include: {
-              address: true
-            },
-            
-            take: quantity,
-            skip: (page * quantity)
-          })
-          
-          return response.status(200).json(users)
-        }
-        
-        const users = await prisma.user.findMany({
-          where: {
-            name: {
-              contains: name
-            }
-          },
-          
-          include: {
-            address: true
-          },
-          
-          take: quantity,
-          skip: (page * quantity)
-        })
-        
-        return response.status(200).json(users)
-      }
-      
-      if(name == "undefined" && created_at == "true" && sort != "undefined") {
-        const users = await prisma.user.findMany({
-          orderBy: [{
-            created_at: sort
-          }],
-          
-          include: {
-            address: true
-          },
-          
-          take: quantity,
-          skip: (page * quantity)
-        })
-        
-        return response.status(200).json(users)
-      }
-      
-      const users = await prisma.user.findMany({
-        include: {
-          address: true
-        },
-        
-        take: quantity,
-        skip: page * quantity
-      })
-      
-      return response.status(200).json(users)
-      
-    } catch (error) {
-      return handle.express(500, { message: "failed to list users." }) 
     }
   }
 }
