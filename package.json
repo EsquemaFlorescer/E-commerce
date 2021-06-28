@@ -32,6 +32,7 @@
     "@types/sqlite3": "^3.1.7",
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.3.0",
+    "@types/validator": "^13.1.4",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "dotenv": "^8.2.0",
@@ -57,6 +58,7 @@
     "jsonwebtoken": "^8.5.1",
     "pm2": "^4.5.6",
     "sqlite3": "^5.0.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "validator": "^13.6.0"
   }
 }
