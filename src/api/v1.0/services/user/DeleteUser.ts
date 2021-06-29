@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request } from "express"
 
 import { SqliteUsersRepository } from "@v1/repositories/implementations"
 import { IUsersRepository } from "@v1/repositories"
@@ -32,7 +32,7 @@ export default async (request: Request) => {
     return ({
       error: true,
       status: 400,
-      message: "Failed to create user."
+      message: error.message
     })
   }
 }

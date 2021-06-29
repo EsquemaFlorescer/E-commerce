@@ -1,4 +1,4 @@
-import { Request, Response} from "express"
+import { Request } from "express"
 
 import { IAddressRepository } from "@v1/repositories"
 import { SqliteAddressRepository } from "@v1/repositories/implementations"

@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request } from "express"
 import { ParsedQs } from "qs"
 
 import { IUsersRepository } from "@v1/repositories"
