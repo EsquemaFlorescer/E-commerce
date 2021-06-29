@@ -27,6 +27,10 @@ export class SqliteUsersRepository implements IUsersRepository {
     const user = await prisma.user.findUnique({
       where: {
         id
+      },
+
+      include: {
+        address: true
       }
     })
 
@@ -162,7 +166,7 @@ export class SqliteUsersRepository implements IUsersRepository {
   async delete(id: string): Promise<void> {
     await prisma.address.deleteMany({
       where: {
-        userId: id
+        user_id: id
       }
     })
 

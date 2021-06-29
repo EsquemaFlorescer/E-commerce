@@ -31,9 +31,9 @@ export class User {
   constructor(props: Omit<User, "id" | "created_at">, id?: string, created_at?: Date) {
     // if no id was supplied, generate uuid
     if(!id) this.id = uuid()
-
+    
     if(id) this.id = id
-
+    
     if(created_at) this.created_at = created_at
     
     // if no date was supplied, generate new ISO date
@@ -43,7 +43,7 @@ export class User {
     
     // create user object
     Object.assign(this, props)
-
+    
     // generate user hash
     if(!props.username) this.username =`${this.name}`
     if(!props.userhash) this.userhash = randomNumber(4)

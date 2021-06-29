@@ -8,7 +8,7 @@ import { User, randomNumber } from "@v1/entities/User"
 import auth from "@v1/auth"
 
 type createUserResponse = {
-  userHashAlreadyExists: string
+  userHashAlreadyExists: User[]
   userAlreadyExists: User
   access_token: string
   user: User
@@ -69,10 +69,10 @@ export default async (request: Request, response: Response) => {
     }: createUserResponse = await createUser.create(request.body)
 
     // if user with name and hash already exist generate another hash
-    userHashAlreadyExists && (
+    if(userHashAlreadyExists.length) (
       user.userhash = randomNumber(4)
     )
-
+    
     // respond with user information
     return ({
       status: 201,
