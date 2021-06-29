@@ -1,3 +1,4 @@
 import CreateItem from "./CreateItem"
+import ReadItem from "./ReadItem"
 
-export { CreateItem }
+export { CreateItem, ReadItem }

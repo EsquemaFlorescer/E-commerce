@@ -5,7 +5,7 @@ import { ItemController } from "@v1/controllers"
 const router = Router()
 
 router.post("/", ItemController.create) /* Creates item */
-router.post("/list/:page", ItemController.list) /* Lists items */
+router.get("/:id?", ItemController.read) /* Lists items */
 router.patch("/", ItemController.update) /* Updates an especific item */
 router.delete("/", ItemController.delete) /* Deletes item */
 
