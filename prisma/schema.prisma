@@ -21,14 +21,14 @@ model User {
 }
 
 model Address {
-  id         Int    @id @default(autoincrement())
-  userId     String
-  postalCode String
-  city       String
-  state      String
-  street     String
-  number     String
-  user       User   @relation(fields: [userId], references: [id])
+  id          Int    @id @default(autoincrement())
+  user_id     String
+  postal_code String
+  city        String
+  state       String
+  street      String
+  number      Int
+  user        User   @relation(fields: [user_id], references: [id])
 }
 
 model Rating {
