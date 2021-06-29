@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { CreateUser, ReadUser, UpdateUser, DeleteUser, CreateAddress } from "@v1/services/user"
+import { CreateUser, ReadUser, UpdateUser, DeleteUser, CreateAddress, DeleteAddress } from "@v1/services/user"
 
 export const UserController = {
   async create(request: Request, response: Response) {
@@ -62,5 +62,13 @@ export const UserController = {
       message,
       address
     })
+  },
+
+  async deleteAddress(request: Request, response: Response) {
+    const { error, status, message } = await DeleteAddress(request)
+
+    if(error) return response.status(status).json(message)
+
+    return response.status(status).json(message)
   }
 }

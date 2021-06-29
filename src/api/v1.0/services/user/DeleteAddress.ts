@@ -3,22 +3,15 @@ import { Request } from "express"
 import { IAddressRepository } from "@v1/repositories"
 import { SqliteAddressRepository } from "@v1/repositories/implementations"
 
-import { Address } from "@v1/entities"
-
-export class CreateAddressService {
+export class DeleteAddressService {
   constructor(
     private addressRepository: IAddressRepository
   ) {}
 
-  async create(addressRequest: Address) {
+  async delete({ id }, user_id: string) {
     try {
-      const address = new Address(addressRequest)
-      
-      await this.addressRepository.save(address)
-      
-      return {
-        address
-      }
+      await this.addressRepository.delete(id, user_id)
+
     } catch (error) {
       console.log(error)
       throw new Error(error.message)
@@ -29,13 +22,13 @@ export class CreateAddressService {
 export default async (request: Request) => {
   try {
     const sqliteAddressRepository = new SqliteAddressRepository()
-    const createAddress = new CreateAddressService(sqliteAddressRepository)
+    const createAddress = new DeleteAddressService(sqliteAddressRepository)
 
-    const { address } = await createAddress.create(request.body)
+    await createAddress.delete(request.body, request.params.id)
 
     return ({
-      status: 201,
-      address
+      status: 202,
+      message: "Address deleted with success!"
     })
   } catch (error) {
     return ({

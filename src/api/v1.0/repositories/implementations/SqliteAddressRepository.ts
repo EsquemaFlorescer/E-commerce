@@ -6,7 +6,6 @@ import { prisma } from "@src/prisma"
 export class SqliteAddressRepository implements IAddressRepository {
   async save(address: Address): Promise<void> {
     const {
-      id,
       city,
       number,
       postal_code,
@@ -18,7 +17,6 @@ export class SqliteAddressRepository implements IAddressRepository {
     await prisma.address.create({
       data: {
         user_id,
-        id,
         city,
         number,
         postal_code,

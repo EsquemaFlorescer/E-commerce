@@ -17,8 +17,8 @@ export function randomNumber(number: number) {
 }
 
 export class User {
-  public id: string
-  public created_at: Date
+  public readonly id: string
+  public readonly created_at: Date
 
   public name: string
   public lastname?: string | undefined

@@ -31,6 +31,7 @@
       "@v1/entities/*": ["src/api/v1.0/entities/*"],
       "@v1/repositories/*": ["src/api/v1.0/repositories/*"],
       "@v1/controllers/*": ["src/api/v1.0/controllers/*"],
+      "@v1/services/*": ["src/api/v1.0/services/*"],
     }
   },
   "exclude": ["node_modules"],

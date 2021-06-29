@@ -15,5 +15,6 @@ router.post("/login", SessionController.create) /* Authenticate user / Login */
 router.patch("/:id?", authenticate, UserController.update) /* Updates an especific user */
 router.delete("/:id?", authenticate, UserController.delete) /* Deletes an especific user */
 router.post("/address", authenticate, UserController.createAddress) /* Creates an address for an especific user */
+router.delete("/address/:id?", authenticate, UserController.deleteAddress) /* Creates an address for an especific user */
 
 export default router

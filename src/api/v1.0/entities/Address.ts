@@ -1,5 +1,4 @@
 export class Address {
-  public readonly id: number = 0
   public readonly user_id: string
 
   public postal_code: string
@@ -10,7 +9,5 @@ export class Address {
 
   constructor(props: Omit<Address, "id">) {
     Object.assign(this, props)
-
-    this.id = this.id + 1
   }
 }
