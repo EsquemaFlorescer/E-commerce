@@ -6,7 +6,7 @@ const router = Router()
 
 router.post("/", ItemController.create) /* Creates item */
 router.get("/:id?", ItemController.read) /* Lists items */
-router.patch("/", ItemController.update) /* Updates an especific item */
+router.patch("/:id?", ItemController.update) /* Updates an especific item */
 router.delete("/", ItemController.delete) /* Deletes item */
 
 /* Image related */

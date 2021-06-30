@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 
 import { prisma } from "@src/prisma"
-import { CreateItem, ReadItem } from "@v1/services/item"
+import { CreateItem, ReadItem, UpdateItem } from "@v1/services/item"
 
 const ItemController = {
   async create(request: Request, response: Response) {
@@ -24,6 +24,47 @@ const ItemController = {
       message,
       items
     })
+  },
+
+  async update(request: Request, response: Response) {
+    const { error, status, message, item } = await UpdateItem(request)
+
+    if(error) return response.status(status).json(message)
+
+    return response.status(status).json({
+      message,
+      item
+    })
+  },
+
+  async delete(request: Request, response: Response) {
+    let { id } = request.body
+
+    try {
+      await prisma.image.deleteMany({
+        where: {
+          itemId: id
+        }
+      })
+
+      await prisma.rating.deleteMany({
+        where: {
+          itemId: id
+        }
+      })
+
+      const item = await prisma.item.delete({
+        where: {
+          id
+        }
+      })
+
+      return response.status(200).json({ item })
+
+    } catch (error) {
+
+      return response.status(500).json({ error: error.name, details: { message: error.message } })
+    }
   },
 
   async rateItem(request: Request, response: Response) {
@@ -101,35 +142,6 @@ const ItemController = {
     }
   },
 
-  async update(request: Request, response: Response) {
-    let { id, name, short_name, description, price, shipping_price, discount, category, orders } = request.body
-
-    try {
-
-      const item = await prisma.item.update({
-        where: {
-          id
-        },
-        data: {
-          name,
-          short_name,
-          description,
-          price,
-          shipping_price,
-          discount,
-          category,
-          orders
-        }
-      })
-
-      return response.json({ item })
-
-    } catch (error) {
-
-      return response.status(500).json({ error: error.name, details: { message: error.message } })
-    }
-  },
-
   async listRating(request: Request, response: Response) {
     const { id } = request.body
 
@@ -175,36 +187,6 @@ const ItemController = {
       })
 
       return response.status(302).json({ items })
-
-    } catch (error) {
-
-      return response.status(500).json({ error: error.name, details: { message: error.message } })
-    }
-  },
-
-  async delete(request: Request, response: Response) {
-    let { id } = request.body
-
-    try {
-      await prisma.image.deleteMany({
-        where: {
-          itemId: id
-        }
-      })
-
-      await prisma.rating.deleteMany({
-        where: {
-          itemId: id
-        }
-      })
-
-      const item = await prisma.item.delete({
-        where: {
-          id
-        }
-      })
-
-      return response.status(200).json({ item })
 
     } catch (error) {
 

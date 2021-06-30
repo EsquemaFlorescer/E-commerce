@@ -51,6 +51,20 @@ export class SqliteItemsRepository implements IItemsRepository {
 
     return items
   }
+  
+  async update(id: number, { ...props }: Item): Promise<ItemType> {
+    const item = await prisma.item.update({
+      where: {
+        id
+      },
+
+      data: {
+        ...props
+      }
+    })
+
+    return item
+  }
 
   async save(item: Item): Promise<void> {
     const {
