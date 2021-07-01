@@ -12,7 +12,8 @@ export class SqliteItemsRepository implements IItemsRepository {
       },
 
       include: {
-        rating: true
+        rating: true,
+        image: true
       }
     })
 

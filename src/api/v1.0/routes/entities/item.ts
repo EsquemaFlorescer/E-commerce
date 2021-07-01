@@ -10,11 +10,10 @@ router.patch("/:id?", ItemController.update) /* Updates an especific item */
 router.delete("/", ItemController.delete) /* Deletes item */
 
 /* Image related */
-router.post("/image", ItemController.createImage)
+router.post("/image/:id?", ItemController.createImage)
 router.delete("/image", ItemController.removeImage)
 
 /* Rating realted */
 router.post("/rate/:id?", ItemController.rateItem) /* Lists an especific item's ratings */
-router.get("/list/category/:category", ItemController.findByCategory) /* List all items by category */
 
 export default router
