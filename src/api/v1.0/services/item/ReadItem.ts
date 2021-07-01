@@ -43,7 +43,6 @@ export class ReadItemService {
         return { items }
       } else {  
         // with pagination
-        console.log("pagination")
         if(category != "undefined" && property != "undefined" && sort != "undefined") {
           // category and property sort
           const items = await this.itemsRepository.findAllPagination(page, quantity, category, property, sort)
@@ -67,7 +66,6 @@ export class ReadItemService {
       }
       
     } catch (error) {
-      // console.log(error)
       throw new Error(error.message)
       return error
     }
