@@ -23,6 +23,11 @@ export class ReadItemService {
       const propertySortSearch = property != "undefined" && sort != "undefined"
       const fullSearch = categorySearch && propertySortSearch
 
+      if(id != undefined) {
+        const items = await this.itemsRepository.findById(Number(id))
+        return { items }
+      }
+
       if(!page && !quantity) {
         // without pagination
         if(fullSearch) {
