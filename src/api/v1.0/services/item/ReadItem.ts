@@ -19,21 +19,25 @@ export class ReadItemService {
       let sort: any = String(query.sort)
       let property: any = String(query.property)
 
+      const categorySearch = category != "undefined"
+      const propertySortSearch = property != "undefined" && sort != "undefined"
+      const fullSearch = categorySearch && propertySortSearch
+
       if(!page && !quantity) {
         // without pagination
-        if(category != "undefined" && property != "undefined" && sort != "undefined") {
+        if(fullSearch) {
           // category and property sort
           const items = await this.itemsRepository.findAll(category, property, sort)
           return { items }
         }
         
-        if(property != "undefined" && sort != "undefined") {
+        if(propertySortSearch) {
           // property sort
           const items = await this.itemsRepository.findAll(undefined, property, sort)
           return { items }
         }
         
-        if(category != "undefined") {
+        if(categorySearch) {
           // category
           const items = await this.itemsRepository.findAll(category, undefined, undefined)
           return { items }
@@ -43,19 +47,19 @@ export class ReadItemService {
         return { items }
       } else {  
         // with pagination
-        if(category != "undefined" && property != "undefined" && sort != "undefined") {
+        if(fullSearch) {
           // category and property sort
           const items = await this.itemsRepository.findAllPagination(page, quantity, category, property, sort)
           return { items }
         }
         
-        if(property != "undefined" && sort != "undefined") {
+        if(propertySortSearch) {
           // property sort
           const items = await this.itemsRepository.findAllPagination(page, quantity, undefined, property, sort)
           return { items }
         }
         
-        if(category != "undefined") {
+        if(categorySearch) {
           // category
           const items = await this.itemsRepository.findAllPagination(page, quantity, category, undefined, undefined)
           return { items }
