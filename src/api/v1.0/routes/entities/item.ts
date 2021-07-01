@@ -15,7 +15,6 @@ router.delete("/image", ItemController.removeImage)
 
 /* Rating realted */
 router.post("/rate/:id?", ItemController.rateItem) /* Lists an especific item's ratings */
-router.post("/rate/list", ItemController.listRating) /* List all items by category */
 router.get("/list/category/:category", ItemController.findByCategory) /* List all items by category */
 
 export default router

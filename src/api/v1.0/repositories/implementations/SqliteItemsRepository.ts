@@ -19,23 +19,47 @@ export class SqliteItemsRepository implements IItemsRepository {
     return item
   }
 
-  async findAll(property?: string, sort?: "asc" | "desc" | string): Promise<ItemType[]> {
+  async findAll(category?: string, property?: string, sort?: "asc" | "desc" | string): Promise<ItemType[]> {
     const items = await prisma.item.findMany()
     
-    if(property != undefined && sort != "undefined") {
+    if(category != "undefined" && property != undefined && sort != undefined) {
       const items = await prisma.item.findMany({
         orderBy: [{
           [property]: sort
-        }]
+        }],
+        where: {
+          category
+        }
+      })
+      
+      return items
+    }
+
+    if(category != "undefined") {
+      const items = await prisma.item.findMany({
+        where: {
+          category
+        }
       })
 
       return items
     }
 
+    if(property != undefined && sort != undefined) {
+      const items = await prisma.item.findMany({
+        orderBy: [{
+          [property]: sort
+        }]
+      })
+      
+      return items
+    }
+
+
     return items
   }
 
-  async findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<ItemType[] | Item[] | {}> {
+  async findAllPagination(page: number, quantity: number, category?: string, property?: string, sort?: string): Promise<ItemType[] | Item[] | {}> {
     const items = await prisma.item.findMany({
       take: quantity,
       skip: quantity * page
@@ -47,6 +71,33 @@ export class SqliteItemsRepository implements IItemsRepository {
         skip: quantity * page,
         orderBy: {
           [property]: sort
+        }
+      })
+
+      return items
+    }
+
+    if(category != undefined) {
+      const items = await prisma.item.findMany({
+        take: quantity,
+        skip: quantity * page,
+        where: {
+          category
+        }
+      })
+
+      return items
+    }
+
+    if(category != undefined && property != undefined && sort != "undefined") {
+      const items = await prisma.item.findMany({
+        take: quantity,
+        skip: quantity * page,
+        orderBy: {
+          [property]: sort
+        },
+        where: {
+          category
         }
       })
 

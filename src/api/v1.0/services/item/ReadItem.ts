@@ -15,6 +15,7 @@ export class ReadItemService {
       let page: number = Number(query.page)
       let quantity: number = Number(query.quantity)
   
+      let category: string = String(query.category)
       let sort: any = String(query.sort)
       let property: any = String(query.property)
       
@@ -26,25 +27,35 @@ export class ReadItemService {
           items
         }
       }
-  
+      
       // if no page and no quantity are supplied, list all items
-      if(!page && !quantity) {
-        const items = await this.itemsRepository.findAll(property, sort)
-  
+      if(category != undefined && property != "undefined" && sort != "undefined") {
+        const items = await this.itemsRepository.findAll(category, property, sort)
+        
         return {
           items
         }
       }
-  
-      // if only page and quantity are supplied, sort items with pagination
-      if(page != undefined && sort != undefined) {
-        const items = await this.itemsRepository.findAllPagination(page, quantity, property, sort)
+
+      if(property != "undefined" && sort != "undefined") {
+        const items = await this.itemsRepository.findAll(undefined, property, sort)
+        
+        return {
+          items
+        }
+      }
+      
+      // if category is supplied search items with that category
+      if(category != undefined) {
+        const items = await this.itemsRepository.findAll(category, undefined, undefined)
 
         return {
           items
         }
       }
+      
     } catch (error) {
+      // console.log(error)
       throw new Error(error.message)
       return error
     }

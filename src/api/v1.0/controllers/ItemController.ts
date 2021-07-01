@@ -94,40 +94,6 @@ const ItemController = {
     }
   },
 
-  async listRating(request: Request, response: Response) {
-    const { id } = request.body
-
-    try {
-      const item = await prisma.item.findUnique({
-        where: {
-          id
-        },
-
-        select: {
-          rating: true
-        }
-      })
-
-      let allNumberRatings = (Number(item?.rating?.one_star) * 1) + (Number(item?.rating?.two_star) * 2) + (Number(item?.rating?.three_star) * 3) + (Number(item?.rating?.four_star) * 4) + (Number(item?.rating?.five_star) * 5)
-      let allRatings = Number(item?.rating?.one_star) + Number(item?.rating?.two_star) + Number(item?.rating?.three_star) + Number(item?.rating?.four_star) + Number(item?.rating?.five_star)
-
-      return response.status(200).json({
-        ratings: {
-          one_star: item?.rating?.one_star,
-          two_star: item?.rating?.two_star,
-          three_star: item?.rating?.three_star,
-          four_star: item?.rating?.four_star,
-          five_star: item?.rating?.five_star,
-          average: Math.floor(allNumberRatings / allRatings)
-        }
-      })
-
-    } catch (error) {
-
-      return response.status(500).json({ error: error.name, details: { message: error.message } })
-    }
-  },
-
   async findByCategory(request: Request, response: Response) {
     let { category } = request.params
 
