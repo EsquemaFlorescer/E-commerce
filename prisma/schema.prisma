@@ -33,13 +33,13 @@ model Address {
 
 model Rating {
   id         Int  @id @default(autoincrement())
-  itemId     Int  @unique
+  item_id    Int
   one_star   Int
   two_star   Int
   three_star Int
   four_star  Int
   five_star  Int
-  item       Item @relation(fields: [itemId], references: [id])
+  item       Item @relation(fields: [item_id], references: [id])
 }
 
 model Image {

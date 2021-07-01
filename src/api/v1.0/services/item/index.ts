@@ -3,4 +3,12 @@ import ReadItem from "./ReadItem"
 import UpdateItem from "./UpdateItem"
 import DeleteItem from "./DeleteItem"
 
-export { CreateItem, ReadItem, UpdateItem, DeleteItem }
+import RateItem from "./RateItem"
+
+export { 
+  CreateItem,
+  ReadItem,
+  UpdateItem,
+  DeleteItem,
+  RateItem
+}

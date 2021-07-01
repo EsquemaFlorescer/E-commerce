@@ -7,7 +7,8 @@ export class Rating {
   public four_star: number
   public five_star: number
 
-  constructor(props: Rating) {
+  constructor(props: Rating, id: number) {
     Object.assign(this, props)
+    this.item_id = id
   }
 }

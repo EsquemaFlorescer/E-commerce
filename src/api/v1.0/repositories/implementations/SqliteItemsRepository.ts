@@ -1,7 +1,7 @@
 import { IItemsRepository } from "@v1/repositories"
 import { Item, Rating, Image } from "@v1/entities"
 
-import { Item as ItemType } from "@prisma/client"
+import { Item as ItemType, Rating as RatingType } from "@prisma/client"
 import { prisma } from "@src/prisma"
 
 export class SqliteItemsRepository implements IItemsRepository {
@@ -9,6 +9,10 @@ export class SqliteItemsRepository implements IItemsRepository {
     const item = await prisma.item.findUnique({
       where: {
         id
+      },
+
+      include: {
+        rating: true
       }
     })
 
@@ -50,6 +54,55 @@ export class SqliteItemsRepository implements IItemsRepository {
     }
 
     return items
+  }
+
+  async rate(rating: Rating): Promise<Rating> {
+    const {
+      item_id,
+      one_star,
+      two_star,
+      three_star,
+      four_star,
+      five_star
+    } = rating
+
+    const oldRating = await prisma.rating.findMany({
+      where: {
+        item_id
+      }
+    })
+
+    if(oldRating == undefined || oldRating == null) {
+      const itemRating = await prisma.rating.create({
+        data: {
+          item_id,
+          one_star,
+          two_star,
+          three_star,
+          four_star,
+          five_star
+        }
+      })
+
+      return itemRating
+    }
+
+    const itemRating = await prisma.rating.update({
+      where: {
+        id: 1
+      },
+
+      data: {
+        item_id,
+        one_star: one_star + oldRating[0].one_star,
+        two_star: two_star + oldRating[0].two_star,
+        three_star: three_star + oldRating[0].three_star,
+        four_star: four_star + oldRating[0].four_star,
+        five_star: five_star + oldRating[0].five_star
+      }
+    })
+
+    return itemRating
   }
   
   async update(id: number, { ...props }: Item): Promise<ItemType> {
