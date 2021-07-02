@@ -16,7 +16,7 @@ export class SqliteItemsRepository implements IItemsRepository {
         image: true
       }
     })
-
+    
     return item
   }
 
@@ -60,7 +60,7 @@ export class SqliteItemsRepository implements IItemsRepository {
     return items
   }
 
-  async findAllPagination(page: number, quantity: number, category?: string, property?: string, sort?: string): Promise<ItemType[] | Item[] | {}> {
+  async findAllPagination(page: number, quantity: number, category?: string, property?: string, sort?: string): Promise<ItemType[] | Item[] | []> {
     const items = await prisma.item.findMany({
       take: quantity,
       skip: quantity * page
