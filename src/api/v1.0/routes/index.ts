@@ -9,7 +9,6 @@ router.use("/user", user)
 router.use("/item", item)
 
 // todo:
-// versioning
 /**
  * v1: db drivers (sqlite3, pg, mysql)
  * v2: Query builder (knex.js, prisma)
@@ -18,29 +17,4 @@ router.use("/item", item)
  * v5: GraphQL
  * v6: like rocketseat (with classes, services, repositories)
  */
-/**
- * TODO:
- * blog with infinite scroll
- * send email to users
- * add gender
- */
-/**
- * folder structure
- *  src/
- *    api/
- *      v1/
- *        controllers/
- *        database/
- *        models/
- *        services/
- *      v2/
- *      v3/
- *      v4/
- *      v5/
- *    lib/
- *      auth/
- *    tests/
- *    utils/
- */
-
 export { router }
