@@ -3,7 +3,7 @@ import { Request } from "express"
 import { IImageRepository } from "@v1/repositories"
 import { SqliteImageRepository } from "@v1/repositories/implementations"
 
-export class DeleteImageService {
+class DeleteImageService {
   constructor(
     private imageRepository: IImageRepository
   ) {}

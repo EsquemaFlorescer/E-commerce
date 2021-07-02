@@ -4,7 +4,7 @@ import { ParsedQs } from "qs"
 import { IItemsRepository } from "@v1/repositories"
 import { SqliteItemsRepository } from "@v1/repositories/implementations"
 
-export class ReadItemService {
+class ReadItemService {
   constructor(
     private itemsRepository: IItemsRepository
   ) {}
@@ -92,13 +92,9 @@ export class ReadItemService {
 
 export default async (request: Request) => {
   try {
-    // create sqlite repository
     const ItemsRepository = new SqliteItemsRepository()
-
-    // create read item service
     const ReadItem = new ReadItemService(ItemsRepository)
 
-    // execute item service
     const { items } = await ReadItem.read(request.params.id, request)
     // respond with item information
     return ({

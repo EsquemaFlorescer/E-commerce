@@ -5,7 +5,7 @@ import { SqliteItemsRepository } from "@v1/repositories/implementations"
 
 import { Rating } from "@v1/entities"
 
-export class RateItemService {
+class RateItemService {
   constructor(
     private itemsRepository: IItemsRepository
   ) {}

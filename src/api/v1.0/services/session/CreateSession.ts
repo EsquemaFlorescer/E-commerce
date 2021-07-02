@@ -12,7 +12,7 @@ type loginRequestType = {
   password: string
 }
 
-export class CreateSessionService {
+class CreateSessionService {
   constructor(
     private usersRepository: IUsersRepository
   ) {}

@@ -3,7 +3,7 @@ import { Request } from "express"
 import { SqliteUsersRepository } from "@v1/repositories/implementations"
 import { IUsersRepository } from "@v1/repositories"
 
-export class DeleteUserService {
+class DeleteUserService {
   constructor(
     private usersRepository: IUsersRepository
   ) {}

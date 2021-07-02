@@ -15,7 +15,7 @@ type createUserResponse = {
 }
 
 // create user service is responsible for authentication and some rules
-export class CreateUserService {
+class CreateUserService {
   constructor(
     private usersRepository: IUsersRepository
   ) {}

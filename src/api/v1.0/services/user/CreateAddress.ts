@@ -5,7 +5,7 @@ import { SqliteAddressRepository } from "@v1/repositories/implementations"
 
 import { Address } from "@v1/entities"
 
-export class CreateAddressService {
+class CreateAddressService {
   constructor(
     private addressRepository: IAddressRepository
   ) {}

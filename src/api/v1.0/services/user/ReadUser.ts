@@ -10,7 +10,7 @@ type readUserResponse = {
   users: User[]
 }
 
-export class ReadUserService {
+class ReadUserService {
   constructor(
     private usersRepository: IUsersRepository
   ) {}

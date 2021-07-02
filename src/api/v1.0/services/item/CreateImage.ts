@@ -5,7 +5,7 @@ import { SqliteImageRepository } from "@v1/repositories/implementations"
 
 import { Image } from "@v1/entities"
 
-export class CreateImageService {
+class CreateImageService {
   constructor(
     private imageRepository: IImageRepository
   ) {}

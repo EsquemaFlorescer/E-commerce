@@ -5,7 +5,7 @@ import { SqliteItemsRepository } from "@v1/repositories/implementations"
 
 import { Item } from "@v1/entities"
 
-export class UpdateItemService {
+class UpdateItemService {
   constructor(
     private itemsRepository: IItemsRepository
   ) {}
@@ -25,15 +25,11 @@ export class UpdateItemService {
 
 export default async (request: Request) => {
   try {
-    // create sqlite repository
     const ItemsRepository = new SqliteItemsRepository()
-
-    // create update item service
     const UpdateItem = new UpdateItemService(ItemsRepository)
 
-    // execute item service
     const { item } = await UpdateItem.read(Number(request.params.id), request.body)
-    // respond with item information
+    
     return ({
       status: 202,
       message: "Updated item with success!",

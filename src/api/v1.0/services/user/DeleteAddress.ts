@@ -3,7 +3,7 @@ import { Request } from "express"
 import { IAddressRepository } from "@v1/repositories"
 import { SqliteAddressRepository } from "@v1/repositories/implementations"
 
-export class DeleteAddressService {
+class DeleteAddressService {
   constructor(
     private addressRepository: IAddressRepository
   ) {}

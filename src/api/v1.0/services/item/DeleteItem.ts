@@ -3,7 +3,7 @@ import { Request } from "express"
 import { IItemsRepository } from "@v1/repositories"
 import { SqliteItemsRepository } from "@v1/repositories/implementations"
 
-export class DeleteItemService {
+class DeleteItemService {
   constructor(
     private itemsRepository: IItemsRepository
   ) {}
