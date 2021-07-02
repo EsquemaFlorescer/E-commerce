@@ -49,6 +49,12 @@ model Image {
   item    Item   @relation(fields: [item_id], references: [id])
 }
 
+model Cart {
+  id      Int  @id @default(autoincrement())
+  item_id Int
+  item    Item @relation(fields: [item_id], references: [id])
+}
+
 model Item {
   id             Int      @id @default(autoincrement())
   created_at     DateTime @default(now())
@@ -61,4 +67,5 @@ model Item {
   category       String
   image          Image[]
   rating         Rating?
+  Cart           Cart[]
 }
