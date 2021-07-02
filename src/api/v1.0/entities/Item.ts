@@ -17,9 +17,11 @@ export class Item {
 
   public rating: Rating[]
 
-  constructor(props: Omit<Item, "id">, id?: number) {
+  constructor(props: Omit<Item, "id">, image?: Image[]) {
     this.created_at = new Date()
-
+    if(image) {
+      this.image = image
+    }
     Object.assign(this, props)
   }
 }
