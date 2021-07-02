@@ -25,6 +25,9 @@ export class ReadItemService {
 
       if(id != undefined) {
         const items = await this.itemsRepository.findById(Number(id))
+
+        if(items == null) throw new Error("item not found")
+
         return { items }
       }
 
@@ -33,44 +36,50 @@ export class ReadItemService {
         if(fullSearch) {
           // category and property sort
           const items = await this.itemsRepository.findAll(category, property, sort)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
         
         if(propertySortSearch) {
           // property sort
           const items = await this.itemsRepository.findAll(undefined, property, sort)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
         
         if(categorySearch) {
           // category
           const items = await this.itemsRepository.findAll(category, undefined, undefined)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
         const items = await this.itemsRepository.findAll()
-
         return { items }
       } else {  
         // with pagination
         if(fullSearch) {
           // category and property sort
           const items = await this.itemsRepository.findAllPagination(page, quantity, category, property, sort)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
         
         if(propertySortSearch) {
           // property sort
           const items = await this.itemsRepository.findAllPagination(page, quantity, undefined, property, sort)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
         
         if(categorySearch) {
           // category
           const items = await this.itemsRepository.findAllPagination(page, quantity, category, undefined, undefined)
+          if(items == null || items.length == 0) throw new Error("items not found")
           return { items }
         }
 
         const items = await this.itemsRepository.findAllPagination(page, quantity)
+        if(items == null || items.length == 0) throw new Error("items not found")
         return { items }
       }
       
@@ -99,6 +108,14 @@ export default async (request: Request) => {
     })
 
   } catch (error) {
+    if(error.message == "items not found" || error.message == "item not found") {
+      return ({
+        error: true,
+        status: 404,
+        message: error.message
+      })
+    }
+
     // in case of error
     return ({
       error: true,
