@@ -18,6 +18,7 @@ model User {
   email      String
   password   String
   address    Address[]
+  cart       Cart[]
 }
 
 model Address {
@@ -50,9 +51,10 @@ model Image {
 }
 
 model Cart {
-  id      Int  @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
+  user_id String
   item_id Int
-  item    Item @relation(fields: [item_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id])
 }
 
 model Item {
@@ -67,5 +69,4 @@ model Item {
   category       String
   image          Image[]
   rating         Rating?
-  Cart           Cart[]
 }
