@@ -4,11 +4,12 @@ import { SqliteUsersRepository } from "@v1/repositories/implementations"
 import { IUsersRepository } from "@v1/repositories"
 
 import { verify, sign } from "jsonwebtoken"
-import { compare } from "bcrypt"
+import { compare, getRounds, hash } from "bcrypt"
 
 type loginRequestType = {
-  name: string
-  email: string
+  email?: string
+  username?: string
+  userhash?: string
   password: string
 }
 
@@ -28,7 +29,7 @@ class CreateSessionService {
 
       if(authHeader == undefined) throw new Error("No token was found")
       if(token == undefined) throw new Error(`
-        Your token must include Bearer:
+        Your token must include Bearer:\n
           example: 'Bearer <your_token>'
       `)
 
@@ -52,8 +53,35 @@ class CreateSessionService {
         refresh_token
       })
     } catch (error) {
-      const { email, password } = loginRequest
+      const { username, userhash, email, password } = loginRequest
       
+      if(!email || email == undefined) {
+        const user = await this.usersRepository.findUsername(username, userhash)
+        if(user.length == 0) throw new Error("Wrong username!")
+        
+        const comparePassword = await compare(password, user[0].password)
+        if(comparePassword != true) throw new Error("Wrong password!")
+
+        const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN)
+        
+        const [{ id, name }] = user
+        const jwt_user = {
+          id,
+          name,
+          username: user[0].username
+        }
+
+        const refresh_token = sign(
+          jwt_user,
+          jwt_refresh_token,
+          { expiresIn: "168h" }
+        )
+
+        return ({
+          social_login: true,
+          refresh_token
+        })
+      }
       // searches user with input email
       const user = await this.usersRepository.findByEmail(email)
       

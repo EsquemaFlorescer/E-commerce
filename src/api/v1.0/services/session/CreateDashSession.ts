@@ -26,7 +26,7 @@ class CreateDashSessionService {
 
       if(authHeader == undefined) throw new Error("No token was found")
       if(token == undefined) throw new Error(`
-        Your token must include Bearer:
+        Your token must include Bearer:\n
           example: 'Bearer <your_token>'
       `)
 

@@ -94,20 +94,25 @@ export class SqliteUsersRepository implements IUsersRepository {
     return user
   }
 
-  async findUsername(username: string, userhash: string | undefined): Promise<{ id: string, username: string, userhash: string }[]> {
+  async findUsername(username: string | undefined, userhash: string | undefined): Promise<UserType[]> {
     const user = await prisma.user.findMany({
       where: {
         username,
         userhash
-      },
-
-      select: {
-        id: true,
-        username: true,
-        userhash: true
       }
     })
 
+    return user
+  }
+
+  async usernameLogin(username: string | undefined, password: string): Promise<UserType[]> {
+    const user = await prisma.user.findMany({
+      where: {
+        username,
+        password
+      }
+    })
+    
     return user
   }
 
