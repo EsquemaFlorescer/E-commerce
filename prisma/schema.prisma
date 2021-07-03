@@ -10,6 +10,7 @@ datasource db {
 model User {
   id         String    @id
   created_at DateTime
+  admin      Boolean?
   name       String
   lastname   String?
   username   String
