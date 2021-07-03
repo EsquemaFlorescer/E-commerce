@@ -38,7 +38,7 @@ export class User {
   public email: string
   public password: string
 
-  constructor(props: Omit<User, "id" | "created_at">, { id, created_at, admin }: optionalProps) {
+  constructor(props: Omit<User, "id" | "created_at">, { id, created_at, admin }: optionalProps = {}) {
     // if no id was supplied, generate uuid
     if(!id) this.id = uuid()
     
