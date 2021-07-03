@@ -10,6 +10,7 @@ router.post("/", UserController.create) /* Creates user */
 router.get("/:id?", UserController.read) /* Lists users */
 
 router.post("/login", SessionController.create) /* Authenticate user / Login */
+router.post("/admin/login", DashboardController.login) /* Authenticate user / Login */
 
 /** Require JWT to execute */
 router.patch("/:id?", authenticate, UserController.update) /* Updates an especific user */

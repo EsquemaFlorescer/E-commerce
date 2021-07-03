@@ -1,3 +1,4 @@
 import CreateSession from "./CreateSession"
+import CreateDashSession from "./CreateDashSession"
 
-export { CreateSession }
+export { CreateSession, CreateDashSession }

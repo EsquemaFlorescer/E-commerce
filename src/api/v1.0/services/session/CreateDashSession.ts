@@ -1,29 +1,27 @@
 import { Request } from "express"
-
-import { SqliteUsersRepository } from "@v1/repositories/implementations"
-import { IUsersRepository } from "@v1/repositories"
-
-import { verify, sign } from "jsonwebtoken"
+import { sign, verify } from "jsonwebtoken"
 import { compare } from "bcrypt"
 
-type loginRequestType = {
-  name: string
+import { IUsersRepository } from "@v1/repositories"
+import { SqliteUsersRepository } from "@v1/repositories/implementations"
+
+import { User } from "@v1/entities"
+
+type LoginRequestType = {
   email: string
   password: string
 }
 
-class CreateSessionService {
+class CreateDashSessionService {
   constructor(
     private usersRepository: IUsersRepository
   ) {}
 
-  async create(loginRequest: loginRequestType, authHeader: string | undefined) {
+  async login(loginRequest: LoginRequestType, authHeader: string | undefined) {
     try {
-      // jwt refresh token secret
-      const jwt_access_token = String(process.env.JWT_ACCESS_TOKEN)
-      const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN)
+      const dash_access_token = String(process.env.DASH_ACCESS_TOKEN)
+      const dash_refresh_token = String(process.env.DASH_REFRESH_TOKEN)
 
-      // jwt access token from headers
       const token = authHeader?.split(" ")[1]
 
       if(authHeader == undefined) throw new Error("No token was found")
@@ -32,18 +30,16 @@ class CreateSessionService {
           example: 'Bearer <your_token>'
       `)
 
-      // get information from authorization header
-      const access_token = verify(token, jwt_access_token)
+      const payload = verify(token, dash_access_token)
       const jwt_user = {
-        id: access_token["id"],
-        name: access_token["name"],
-        email: access_token["email"]
+        id: payload["id"],
+        name: payload["name"],
+        email: payload["email"]
       }
 
-      // giving the user a refresh token
       const refresh_token = sign(
-        jwt_user,             // embbeding user info in jwt
-        jwt_refresh_token,    // refresh token secret
+        jwt_user,
+        dash_refresh_token,
         { expiresIn: "168h" } // 7 days
       )
 
@@ -53,22 +49,16 @@ class CreateSessionService {
       })
     } catch (error) {
       const { email, password } = loginRequest
-      
-      // searches user with input email
+
       const user = await this.usersRepository.findByEmail(email)
-      
-      // if there isn't a user with input email
+
       if(user.length == 0) throw new Error("Wrong e-mail!")
 
-      // compare from input password and database password
       const comparePassword = await compare(password, user[0].password)
 
-      // if passwords do not match up
       if(comparePassword != true) throw new Error("Wrong password!")
 
-      // if everything goes as normal
-      // jwt refresh token secret
-      const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN)
+      const dash_refresh_token = String(process.env.DASH_REFRESH_TOKEN)
 
       const [{ id, name }] = user
       const jwt_user = {
@@ -77,11 +67,10 @@ class CreateSessionService {
         email: user[0].email
       }
 
-      // giving the user a refresh token
       const refresh_token = sign(
-        jwt_user,             // embbeding user info in jwt
-        jwt_refresh_token,    // refresh token secret
-        { expiresIn: "168h" } // 7 days
+        jwt_user,
+        dash_refresh_token,
+        { expiresIn: "168h" }
       )
 
       return ({
@@ -95,13 +84,13 @@ class CreateSessionService {
 export default async (request: Request) => {
   try {
     const UsersRepository = new SqliteUsersRepository()
-    const CreateSession = new CreateSessionService(UsersRepository)
+    const CreateDashSession = new CreateDashSessionService(UsersRepository)
 
     const {
       refresh_token,
       jwt_login,
       social_login
-    } = await CreateSession.create(request.body, request.headers["authorization"])
+    } = await CreateDashSession.login(request.body, request.headers["authorization"])
 
     return ({
       jwt_login,
@@ -113,7 +102,7 @@ export default async (request: Request) => {
     return ({
       error: true,
       status: 400,
-      message: error.message
+      message: "Failed to login as an Admin."
     })
   }
 }
