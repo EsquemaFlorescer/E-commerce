@@ -1,0 +1,11 @@
+{
+  "apps" : [{
+    "name"       : "ecommerce",
+    "script"     : "./build/server.js",
+    "watch"      : true,
+    "ignore_watch": ["node_modules"],
+    "instances"  : "max",
+    "exec_mode"  : "cluster"
+  }]
+}
+  
