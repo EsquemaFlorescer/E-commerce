@@ -19,7 +19,7 @@ export const DashboardController = {
     const { error, status, message, user } = await LoadAdmin(request)
 
     if(error) return response.status(status).json(message)
-
+    if(user == null) return
     response.header("authorization", user?.access_token)
 
     return response.status(status).json({

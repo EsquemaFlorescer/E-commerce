@@ -26,7 +26,7 @@ class UpdateUserService {
       ]
       
       // create user
-      const user = new User({ name, lastname, username, userhash, cpf, email, password }, id)
+      const user = new User({ name, lastname, username, userhash, cpf, email, password }, { id })
 
       // updates user
       await this.usersRepository.update(user)
