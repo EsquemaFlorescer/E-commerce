@@ -23,7 +23,7 @@ export class SqliteUsersRepository implements IUsersRepository {
     return users
   }
   
-  async findById(id: string, select?: "userhash"): Promise<UserType | { userhash: string | undefined } | null> {
+  async findById(id: string): Promise<UserType | null> {
     const user = await prisma.user.findUnique({
       where: {
         id
@@ -40,6 +40,7 @@ export class SqliteUsersRepository implements IUsersRepository {
             number: true
           }
         },
+        
         cart: {
           select: {
             id: true,
@@ -48,22 +49,6 @@ export class SqliteUsersRepository implements IUsersRepository {
         }
       }
     })
-
-    if(select != undefined) {
-      const user = await prisma.user.findUnique({
-        where: {
-          id
-        },
-
-        select: {
-          [select]: true
-        }
-      })
-
-      return ({
-        userhash: user?.userhash
-      })
-    }
 
     return user
   }
@@ -160,20 +145,39 @@ export class SqliteUsersRepository implements IUsersRepository {
   }
   
   async save(user: User): Promise<void> {
-    const { id, created_at, admin, name, lastname, email, password, cpf, userhash, username } = user
+    const {
+      id,
+      created_at,
+      admin,
+      ip,
+      name,
+      email,
+      password,
+      cpf,
+      lastname,
+      username,
+      userhash,
+      ban,
+      reason_for_ban,
+      shadow_ban
+    } = user
 
     await prisma.user.create({
       data: {
         id,
         created_at,
         admin,
+        ban,
+        shadow_ban,
+        reason_for_ban,
+        ip,
         name,
-        lastname,
         email,
         password,
         cpf,
-        userhash,
-        username
+        lastname,
+        username,
+        userhash
       }
     })
   }
