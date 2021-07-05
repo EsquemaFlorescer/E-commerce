@@ -29,6 +29,10 @@ export class User {
   public readonly id: string
   public readonly created_at: Date
   public readonly admin?: boolean
+  public readonly ip?: string
+  public readonly shadow_ban?: boolean
+  public readonly ban?: boolean
+  public readonly reason_for_ban?: string
 
   public name: string
   public lastname?: string | undefined
@@ -59,13 +63,14 @@ export class User {
     
     // create user object
     Object.assign(this, props)
-    
+
     // generate user hash
     if(!props.username) this.username =`${this.name}`
     if(!props.userhash) this.userhash = randomNumber(4)
 
-    // encrypt password
+    // encrypt password and ip
     const salt = genSaltSync(10)
+    this.ip = hashSync(this.ip, salt)
     this.password = hashSync(this.password, salt)
   }
 }

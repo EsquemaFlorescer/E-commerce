@@ -20,20 +20,28 @@ class CreateUserService {
     private usersRepository: IUsersRepository
   ) {}
 
-  async create(userRequest: User) {
+  async create({ name, email, password }: User, { ip }: Request) {
     try {
       // searches users with that e-mail
-      const userAlreadyExists = await this.usersRepository.findByEmail(userRequest.email)
+      const userAlreadyExists = await this.usersRepository.findByEmail(email)
 
       // if user with same email exists
       if(userAlreadyExists.length) throw new Error("User already exists.")
 
+      ip = ip.slice(7)
       // creates user
-      const user = new User(userRequest)
+      const user = new User({
+        name,
+        email,
+        password,
+        ip,
+        shadow_ban: false,
+        ban: false,
+        reason_for_ban: ""
+      })
 
       // searches for duplicate user hash
       const userHashAlreadyExists = await this.usersRepository.findUserhash(user.name, user.userhash)
-
       // stores user in the database
       await this.usersRepository.save(user)
 
@@ -54,7 +62,7 @@ class CreateUserService {
 
 // just return everything from create user service
 export default async (request: Request) => {
-  try {
+  try {    
     const UsersRepository = new SqliteUsersRepository()
     const CreateUser = new CreateUserService(UsersRepository)
 
@@ -62,7 +70,7 @@ export default async (request: Request) => {
       userHashAlreadyExists,
       access_token,
       user 
-    }: createUserResponse = await CreateUser.create(request.body)
+    }: createUserResponse = await CreateUser.create(request.body, request)
 
     // if user with name and hash already exist generate another hash
     if(userHashAlreadyExists.length) (
