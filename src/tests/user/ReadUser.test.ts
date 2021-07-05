@@ -3,6 +3,8 @@ import request from "supertest"
 import { app } from "@src/app"
 import { User } from "@v1/entities"
 
+import { prisma } from "@src/prisma"
+
 type ReadUserResponseType<T> = {
   status: number
 
@@ -25,9 +27,28 @@ var ReadAllUsersResponse: User = {
   password: "",
 }
 
-// const delay = (delay: number) => new Promise(resolve => setTimeout(resolve, delay))
-
 describe("Read User", () => {
+  it("should create multiple users", async () => {
+    await prisma.user.deleteMany()
+
+    const { body } = await request(app).post("/v1/user").send({
+      name: "vitor",
+      email: "vitor@gmail.com",
+      password: "123"
+    })
+
+    const { body: body2 } = await request(app).post("/v1/user").send({
+      name: "vitor",
+      email: "vitor1@gmail.com",
+      password: "123"
+    })
+
+    console.log(body.user.created_at.slice(20).length = 3)
+    console.log(body2.user.created_at)
+    // console.log("2021-07-05T04:13:34.730Z")
+    // console.log("2021-07-05T04:13:36.041Z")
+  })
+
   it("should list all users", async () => {
     const { status, body }: ReadUserResponseType<User[]> = await request(app)
       .get("/v1/user")

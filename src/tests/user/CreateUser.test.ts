@@ -31,7 +31,7 @@ const CreateUserRequest: CreateUserRequestType = {
 }
 
 describe("User Register", () => {
-  it("should create a new user", async () => {
+  test("should create a new user", async () => {
     const { name, email, password } = CreateUserRequest
 
     const { status, body, headers }: CreateUserResponseType = await request(app)
@@ -41,9 +41,8 @@ describe("User Register", () => {
         email,
         password
       })
-
+    
     const { user } = body
-
     expect(status).toBe(201)
 
     expect(headers.authorization).toHaveLength(241)
