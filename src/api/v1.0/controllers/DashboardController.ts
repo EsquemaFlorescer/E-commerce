@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 
 import { LoadFile } from "@v1/services/item"
-import { LoadAdmin } from "@v1/services/user"
+import { LoadAdmin, BanUser } from "@v1/services/user"
 import { CreateDashSession } from "@v1/services/session"
 
 export const DashboardController = {
@@ -47,5 +47,13 @@ export const DashboardController = {
       social_login,
       refresh_token
     })
+  },
+
+  async banUser(request: Request, response: Response) {
+    const { error, status, message } = await BanUser(request) 
+
+    if(error) return response.status(status).json(message)
+
+    return response.status(status).json(message)
   }
 }

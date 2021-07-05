@@ -4,7 +4,8 @@ import { SqliteUsersRepository } from "@v1/repositories/implementations"
 import { IUsersRepository } from "@v1/repositories"
 
 import { verify, sign } from "jsonwebtoken"
-import { compare, getRounds, hash } from "bcrypt"
+import { compare } from "bcrypt"
+import { isBanned } from "@v1/utils/IsBanned"
 
 type loginRequestType = {
   email?: string
@@ -57,6 +58,7 @@ class CreateSessionService {
       
       if(!email || email == undefined) {
         const user = await this.usersRepository.findUsername(username, userhash)
+        isBanned(user[0].ban, user[0].shadow_ban)
         if(user.length == 0) throw new Error("Wrong username!")
         
         const comparePassword = await compare(password, user[0].password)
@@ -84,6 +86,7 @@ class CreateSessionService {
       }
       // searches user with input email
       const user = await this.usersRepository.findByEmail(email)
+      isBanned(user[0].ban, user[0].shadow_ban)
       
       // if there isn't a user with input email
       if(user.length == 0) throw new Error("Wrong e-mail!")

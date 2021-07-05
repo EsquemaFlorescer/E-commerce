@@ -9,6 +9,7 @@ import DeleteAddress from "./DeleteAddress"
 import CreateCart from "./CreateCart"
 
 import LoadAdmin from "./LoadAdmin"
+import BanUser from "./BanUser"
 
 export { 
   CreateUser,
@@ -18,5 +19,6 @@ export {
   CreateAddress,
   DeleteAddress,
   CreateCart,
-  LoadAdmin
+  LoadAdmin,
+  BanUser
 }
