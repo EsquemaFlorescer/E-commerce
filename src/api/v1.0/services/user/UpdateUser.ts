@@ -16,6 +16,9 @@ class UpdateUserService {
 		try {
 			// middleware already checks for JWT
 			const userInfo = await this.usersRepository.findById(id, 'userhash');
+			if (userInfo == null) {
+				return {};
+			}
 			const userhash = userInfo?.userhash;
 			// searches user with the same username and userhash
 			const usernameAlreadyExists = await this.usersRepository.findUsername(
@@ -33,7 +36,17 @@ class UpdateUserService {
 			// create user
 			ip = ip.slice(7);
 			const user = new User(
-				{ name, lastname, username, userhash, cpf, email, password, ip },
+				{
+					name,
+					lastname,
+					username,
+					userhash,
+					cpf,
+					email,
+					password,
+					ip,
+					token_version: userInfo.token_version,
+				},
 				{ id }
 			);
 
@@ -45,7 +58,6 @@ class UpdateUserService {
 				user,
 			};
 		} catch (error) {
-			console.log(error);
 			throw new Error(error.message);
 		}
 	}

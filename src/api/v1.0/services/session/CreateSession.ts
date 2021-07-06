@@ -43,6 +43,7 @@ class CreateSessionService {
 			if (user.token_version !== access_token['token_version']) {
 				throw new Error('Your session was invalidated.');
 			}
+
 			const jwt_user = {
 				id: access_token['id'],
 				token_version: access_token['token_version'],
@@ -66,7 +67,7 @@ class CreateSessionService {
 
 			const { username, userhash, email, password } = loginRequest;
 
-			if (!email || email == undefined) {
+			if (email == undefined) {
 				const user = await this.usersRepository.findUsername(
 					username,
 					userhash
@@ -79,11 +80,10 @@ class CreateSessionService {
 
 				const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN);
 
-				const [{ id, name }] = user;
+				const [{ id, token_version }] = user;
 				const jwt_user = {
 					id,
-					name,
-					username: user[0].username,
+					token_version,
 				};
 
 				const refresh_token = sign(jwt_user, jwt_refresh_token, {
@@ -115,8 +115,7 @@ class CreateSessionService {
 			const [{ id, name }] = user;
 			const jwt_user = {
 				id,
-				name,
-				email: user[0].email,
+				token_version: user[0].token_version,
 			};
 
 			// giving the user a refresh token

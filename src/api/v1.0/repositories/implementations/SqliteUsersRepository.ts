@@ -1,198 +1,216 @@
-import { IUsersRepository } from "@v1/repositories"
-import { User } from "@v1/entities"
+import { IUsersRepository } from '@v1/repositories';
+import { User } from '@v1/entities';
 
-import { User as UserType } from "@prisma/client"
-import { prisma } from "@src/prisma"
+import { User as UserType } from '@prisma/client';
+import { prisma } from '@src/prisma';
 
-import validator from "validator"
+import validator from 'validator';
 
 export class SqliteUsersRepository implements IUsersRepository {
-  async findAll(property?: string, sort?: "asc" | "desc" | string): Promise<UserType[]> {
-    const users = await prisma.user.findMany()
-    
-    if(property != undefined && sort != "undefined") {
-      const users = await prisma.user.findMany({
-        orderBy: [{
-          [property]: sort
-        }]
-      })
+	async findAll(
+		property?: string,
+		sort?: 'asc' | 'desc' | string
+	): Promise<UserType[]> {
+		const users = await prisma.user.findMany();
 
-      return users
-    }
+		if (property != undefined && sort != 'undefined') {
+			const users = await prisma.user.findMany({
+				orderBy: [
+					{
+						[property]: sort,
+					},
+				],
+			});
 
-    return users
-  }
-  
-  async findById(id: string): Promise<UserType | null> {
-    const user = await prisma.user.findUnique({
-      where: {
-        id
-      },
+			return users;
+		}
 
-      include: {
-        address: {
-          select: {
-            id: true,
-            postal_code: true,
-            city: true,
-            state: true,
-            street: true,
-            number: true
-          }
-        },
-        
-        cart: {
-          select: {
-            id: true,
-            item_id: true
-          }
-        }
-      }
-    })
+		return users;
+	}
 
-    return user
-  }
+	async findById(id: string): Promise<UserType | null> {
+		const user = await prisma.user.findUnique({
+			where: {
+				id,
+			},
 
-  async findByEmail(email: string): Promise<UserType[]> {
-    const isEmail = validator.isEmail(email)
+			include: {
+				address: {
+					select: {
+						id: true,
+						postal_code: true,
+						city: true,
+						state: true,
+						street: true,
+						number: true,
+					},
+				},
 
-    if(!isEmail) {
-      throw new Error("Invalid email.")
-    }
+				cart: {
+					select: {
+						id: true,
+						item_id: true,
+					},
+				},
+			},
+		});
 
-    const user = await prisma.user.findMany({
-      where: {
-        email
-      }
-    })
-    return user
-  }
-  
-  async findUserhash(name: string, userhash: string): Promise<UserType[]> {
-    const user = await prisma.user.findMany({
-      where: {
-        name,
-        userhash
-      }
-    })
-    
-    return user
-  }
+		return user;
+	}
 
-  async findUsername(username: string | undefined, userhash: string | undefined): Promise<UserType[]> {
-    const user = await prisma.user.findMany({
-      where: {
-        username,
-        userhash
-      }
-    })
+	async findByEmail(email: string): Promise<UserType[]> {
+		const isEmail = validator.isEmail(email);
 
-    return user
-  }
+		if (!isEmail) {
+			throw new Error('Invalid email.');
+		}
 
-  async usernameLogin(username: string | undefined, password: string): Promise<UserType[]> {
-    const user = await prisma.user.findMany({
-      where: {
-        username,
-        password
-      }
-    })
-    
-    return user
-  }
+		const user = await prisma.user.findMany({
+			where: {
+				email,
+			},
+		});
+		return user;
+	}
 
-  async findAllPagination(page: number, quantity: number, property?: string, sort?: string): Promise<UserType[] | {}> {
-    const users = await prisma.user.findMany({
-      take: quantity,
-      skip: quantity * page,
-      select: {
-        id: true,
-        created_at: true,
-        name: true,
-        lastname: true,
-        username: true,
-        userhash: true,
-        cpf: true,
-        email: true
-      }
-    })
+	async findUserhash(name: string, userhash: string): Promise<UserType[]> {
+		const user = await prisma.user.findMany({
+			where: {
+				name,
+				userhash,
+			},
+		});
 
-    if(property != undefined && sort != "undefined") {
-      const users = await prisma.user.findMany({
-        take: quantity,
-        skip: quantity * page,
-        orderBy: {
-          [property]: sort
-        }
-      })
+		return user;
+	}
 
-      return users
-    }
+	async findUsername(
+		username: string | undefined,
+		userhash: string | undefined
+	): Promise<UserType[]> {
+		const user = await prisma.user.findMany({
+			where: {
+				username,
+				userhash,
+			},
+		});
 
-    return users
-  }
+		return user;
+	}
 
-  async update({ id, created_at, ...props }: User): Promise<void> {
-    await prisma.user.update({
-      where: {
-        id
-      },
+	async usernameLogin(
+		username: string | undefined,
+		password: string
+	): Promise<UserType[]> {
+		const user = await prisma.user.findMany({
+			where: {
+				username,
+				password,
+			},
+		});
 
-      data: {
-        ...props
-      }
-    })
-  }
-  
-  async save(user: User): Promise<void> {
-    const {
-      id,
-      created_at,
-      admin,
-      ip,
-      name,
-      email,
-      password,
-      cpf,
-      lastname,
-      username,
-      userhash,
-      ban,
-      reason_for_ban,
-      shadow_ban
-    } = user
+		return user;
+	}
 
-    await prisma.user.create({
-      data: {
-        id,
-        created_at,
-        admin,
-        ban,
-        shadow_ban,
-        reason_for_ban,
-        ip,
-        name,
-        email,
-        password,
-        cpf,
-        lastname,
-        username,
-        userhash
-      }
-    })
-  }
+	async findAllPagination(
+		page: number,
+		quantity: number,
+		property?: string,
+		sort?: string
+	): Promise<UserType[] | {}> {
+		const users = await prisma.user.findMany({
+			take: quantity,
+			skip: quantity * page,
+			select: {
+				id: true,
+				created_at: true,
+				name: true,
+				lastname: true,
+				username: true,
+				userhash: true,
+				cpf: true,
+				email: true,
+			},
+		});
 
-  async delete(id: string): Promise<void> {
-    await prisma.address.deleteMany({
-      where: {
-        user_id: id
-      }
-    })
+		if (property != undefined && sort != 'undefined') {
+			const users = await prisma.user.findMany({
+				take: quantity,
+				skip: quantity * page,
+				orderBy: {
+					[property]: sort,
+				},
+			});
 
-    await prisma.user.delete({
-      where: {
-        id
-      }
-    })
-  }
+			return users;
+		}
+
+		return users;
+	}
+
+	async update({ id, created_at, ...props }: User): Promise<void> {
+		await prisma.user.update({
+			where: {
+				id,
+			},
+
+			data: {
+				...props,
+			},
+		});
+	}
+
+	async save(user: User): Promise<void> {
+		const {
+			id,
+			created_at,
+			admin,
+			ip,
+			name,
+			email,
+			password,
+			cpf,
+			lastname,
+			username,
+			userhash,
+			ban,
+			reason_for_ban,
+			shadow_ban,
+			token_version,
+		} = user;
+
+		await prisma.user.create({
+			data: {
+				id,
+				created_at,
+				admin,
+				ban,
+				shadow_ban,
+				reason_for_ban,
+				ip,
+				name,
+				email,
+				password,
+				cpf,
+				lastname,
+				username,
+				userhash,
+				token_version,
+			},
+		});
+	}
+
+	async delete(id: string): Promise<void> {
+		await prisma.address.deleteMany({
+			where: {
+				user_id: id,
+			},
+		});
+
+		await prisma.user.delete({
+			where: {
+				id,
+			},
+		});
+	}
 }

@@ -33,7 +33,7 @@ export class User {
 	public shadow_ban?: boolean;
 	public ban?: boolean;
 	public reason_for_ban?: string;
-	public token_version: number;
+	public token_version?: number | null;
 
 	public name: string;
 	public lastname?: string | undefined;
