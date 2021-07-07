@@ -22,9 +22,14 @@ router.post('/address', authenticate, UserController.createAddress);
 router.delete('/address/:id?', authenticate, UserController.deleteAddress);
 
 router.post('/cart/:id?', authenticate, UserController.createCart);
+router.delete('/cart/:id?', authenticate, UserController.deleteCart);
 
-router.post('/admin', dashAuthenticate, DashboardController.loadAdmin);
+router.post('/admin', DashboardController.loadAdmin);
 router.get('/ban/:id?', dashAuthenticate, DashboardController.banUser);
-router.get('/invalidate/:id?', DashboardController.InvalidateToken);
+router.get(
+	'/invalidate/:id?',
+	dashAuthenticate,
+	DashboardController.InvalidateToken
+);
 
 export default router;
