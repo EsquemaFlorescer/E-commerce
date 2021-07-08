@@ -1,15 +1,17 @@
 import request from 'supertest';
+import { sign } from 'jsonwebtoken';
 
 import { app } from '@src/app';
 import { User } from '@v1/entities';
 
 import { prisma } from '@src/prisma';
 
-type ReadUserResponseType<T> = {
+type ApiResponse<T> = {
 	status: number;
 
 	body: {
 		message: string;
+		user: T;
 		users: T;
 	};
 };
@@ -27,6 +29,32 @@ var ReadAllUsersResponse: User = {
 	password: '',
 };
 
+type CreateUserType = {
+	name: string;
+	email: string;
+	password: string;
+};
+
+const CreateUser = async ({ name, email, password }: CreateUserType) => {
+	const access_token = String(process.env.JWT_ACCESS_TOKEN);
+
+	await request(app).post('/v1/user').send({ name, email, password });
+
+	const userInfo = { name, email, password };
+
+	let token = sign(userInfo, access_token);
+	token = `Bearer ${token}`;
+
+	const {
+		body: { message, user },
+	}: ApiResponse<User> = await request(app).post('/v1/user/activate').set('authorization', token);
+
+	return {
+		message,
+		user,
+	};
+};
+
 describe('Read User', () => {
 	beforeAll(async () => {
 		await prisma.user.deleteMany();
@@ -37,28 +65,27 @@ describe('Read User', () => {
 	});
 
 	it('should create multiple users', async () => {
-		const { body } = await request(app).post('/v1/user').send({
+		const { message, user } = await CreateUser({
 			name: 'vitor',
-			email: 'vitor1@gmail.com',
+			email: 'test1@gmail.com',
 			password: '123',
 		});
 
-		const { body: body2 } = await request(app).post('/v1/user').send({
+		const { message: message2, user: user2 } = await CreateUser({
 			name: 'vitor',
-			email: 'vitor2@gmail.com',
+			email: 'test2@gmail.com',
 			password: '123',
 		});
 
-		const created_at = Number(body.user.created_at.slice(17, 19));
-		const created_at2 = Number(body2.user.created_at.slice(17, 19));
+		const created_at = Number(String(user.created_at).slice(17, 22).split('.').join(''));
+		const created_at2 = Number(String(user2.created_at).slice(17, 22).split('.').join(''));
 
+		expect(message).toBe(message2);
 		expect(created_at2).toBeGreaterThanOrEqual(created_at);
-	});
+	}, 10000);
 
 	it('should list all users', async () => {
-		const { status, body }: ReadUserResponseType<User[]> = await request(
-			app
-		).get('/v1/user');
+		const { status, body }: ApiResponse<User[]> = await request(app).get('/v1/user');
 
 		const { users } = body;
 
@@ -81,9 +108,7 @@ describe('Read User', () => {
 
 	it('should list user by id', async () => {
 		const { id, name, email, password } = ReadAllUsersResponse;
-		const { status, body }: ReadUserResponseType<User> = await request(app).get(
-			`/v1/user/${id}`
-		);
+		const { status, body }: ApiResponse<User> = await request(app).get(`/v1/user/${id}`);
 
 		const { users } = body;
 
@@ -95,24 +120,20 @@ describe('Read User', () => {
 	});
 
 	it('should list users with pagination', async () => {
-		const { body }: ReadUserResponseType<User[]> = await request(app)
-			.get('/v1/user')
-			.query({
-				page: 0,
-				quantity: 2,
-			});
+		const { body }: ApiResponse<User[]> = await request(app).get('/v1/user').query({
+			page: 0,
+			quantity: 2,
+		});
 
 		const { users } = body;
 		expect(users.length).toBe(2);
 	});
 
 	it('should sort users by when they were created', async () => {
-		const { body }: ReadUserResponseType<User[]> = await request(app)
-			.get('/v1/user')
-			.query({
-				property: 'created_at',
-				sort: 'asc',
-			});
+		const { body }: ApiResponse<User[]> = await request(app).get('/v1/user').query({
+			property: 'created_at',
+			sort: 'asc',
+		});
 
 		const { users } = body;
 

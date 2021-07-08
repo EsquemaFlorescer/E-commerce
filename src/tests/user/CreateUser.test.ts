@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
 
 import { app } from '@src/app';
 import { prisma } from '@src/prisma';
@@ -11,12 +12,12 @@ type CreateUserRequestType = {
 	password: string;
 };
 
-type CreateUserResponseType = {
+type ApiResponse<T> = {
 	status: number;
 
 	body: {
 		message: string;
-		user: User;
+		user: T;
 		access_token: string;
 	};
 
@@ -42,23 +43,42 @@ describe('User Register', () => {
 		await prisma.$disconnect();
 	});
 
-	it('should create a new user', async () => {
+	it('should send token to e-mail', async () => {
 		const { name, email, password } = CreateUserRequest;
 
-		const { status, body, headers }: CreateUserResponseType = await request(app)
-			.post('/v1/user')
-			.send({
-				name,
-				email,
-				password,
-			});
+		const { status, body }: ApiResponse<void> = await request(app).post('/v1/user').send({
+			name,
+			email,
+			password,
+		});
 
-		const { user } = body;
+		expect(status).toBe(200);
+
+		expect(body).toBe('Sent verification message to your e-mail!');
+	});
+
+	it('should create user with e-mail token', async () => {
+		const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
+		const { name, email, password } = CreateUserRequest;
+
+		let token = sign(CreateUserRequest, access_token_secret);
+		token = `Bearer ${token}`;
+
+		const { status, body, headers }: ApiResponse<User> = await request(app)
+			.post('/v1/user/activate')
+			.set('authorization', token);
+
 		expect(status).toBe(201);
 
-		expect(headers.authorization).toHaveLength(241);
-		expect(user.name).toEqual(name);
-		expect(user.email).toEqual(email);
+		const { access_token, user, message } = body;
+
+		expect(headers.authorization.length).toBeGreaterThan(1);
+		expect(access_token.length).toBeGreaterThan(1);
+
+		expect(message).toBe('User created with success!');
+
+		expect(user.name).toBe(name);
+		expect(user.email).toBe(email);
 
 		const comparePassword = await compare(password, user.password);
 		expect(comparePassword).toBeTruthy();
