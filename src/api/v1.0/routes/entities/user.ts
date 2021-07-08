@@ -1,21 +1,24 @@
 import { Router } from 'express';
-import {
-	UserController,
-	SessionController,
-	DashboardController,
-} from '@v1/controllers';
+import { UserController, SessionController, DashboardController } from '@v1/controllers';
 
-import { authenticate, dashAuthenticate, isIpBanned } from '../middlewares';
+import {
+	authenticate,
+	dashAuthenticate,
+	isIpBanned,
+	CreateUserRateLimiter,
+	UpdateUserRateLimiter,
+} from '../middlewares';
 
 const router = Router();
 
 router.post('/login', SessionController.create);
 router.post('/admin/login', DashboardController.login);
 
-router.post('/', isIpBanned, UserController.create);
+router.post('/', [isIpBanned, CreateUserRateLimiter()], UserController.create);
+router.post('/activate', UserController.activate);
 router.get('/:id?', UserController.read);
+router.patch('/:id?', [UpdateUserRateLimiter(), authenticate], UserController.update);
 
-router.patch('/:id?', authenticate, UserController.update);
 router.delete('/:id?', authenticate, UserController.delete);
 
 router.post('/address', authenticate, UserController.createAddress);
@@ -26,10 +29,6 @@ router.delete('/cart/:id?', authenticate, UserController.deleteCart);
 
 router.post('/admin', DashboardController.loadAdmin);
 router.get('/ban/:id?', dashAuthenticate, DashboardController.banUser);
-router.get(
-	'/invalidate/:id?',
-	dashAuthenticate,
-	DashboardController.InvalidateToken
-);
+router.get('/invalidate/:id?', dashAuthenticate, DashboardController.InvalidateToken);
 
 export default router;
