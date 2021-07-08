@@ -3,6 +3,8 @@ import ReadUser from './ReadUser';
 import UpdateUser from './UpdateUser';
 import DeleteUser from './DeleteUser';
 
+import ActivateUser from './ActivateUser';
+
 import CreateAddress from './CreateAddress';
 import DeleteAddress from './DeleteAddress';
 
@@ -17,6 +19,7 @@ export {
 	ReadUser,
 	UpdateUser,
 	DeleteUser,
+	ActivateUser,
 	CreateAddress,
 	DeleteAddress,
 	CreateCart,

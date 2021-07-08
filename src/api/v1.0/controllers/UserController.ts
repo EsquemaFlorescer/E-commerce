@@ -9,23 +9,16 @@ import {
 	DeleteAddress,
 	CreateCart,
 	DeleteCart,
+	ActivateUser,
 } from '@v1/services/user';
 
 export const UserController = {
 	async create(request: Request, response: Response) {
-		const { error, message, status, access_token, user } = await CreateUser(
-			request
-		);
+		const { error, status, message } = await CreateUser(request);
 
 		if (error) return response.status(status).json(message);
 
-		response.header('authorization', access_token);
-
-		return response.status(status).json({
-			message,
-			user,
-			access_token,
-		});
+		return response.status(status).json(message);
 	},
 
 	async read(request: Request, response: Response) {
@@ -40,8 +33,7 @@ export const UserController = {
 	},
 
 	async update(request: Request, response: Response) {
-		const { error, message, status, available_usernames, user } =
-			await UpdateUser(request);
+		const { error, message, status, available_usernames, user } = await UpdateUser(request);
 
 		if (error)
 			return response.status(status).json({
@@ -98,5 +90,19 @@ export const UserController = {
 		if (error) return response.status(status).json(message);
 
 		return response.status(status).json(message);
+	},
+
+	async activate(request: Request, response: Response) {
+		const { error, status, message, user, access_token } = await ActivateUser(request);
+
+		if (error) return response.status(status).json(message);
+
+		response.header('authorization', access_token);
+
+		return response.status(status).json({
+			message,
+			user,
+			access_token,
+		});
 	},
 };

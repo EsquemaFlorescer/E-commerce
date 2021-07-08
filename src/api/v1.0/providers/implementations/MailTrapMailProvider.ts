@@ -23,9 +23,7 @@ export class MailTrapMailProvider implements IMailProvider {
 			auth,
 		};
 
-		this.transporter = nodemailer.createTransport(
-			config as SMTPTransport.Options
-		);
+		this.transporter = nodemailer.createTransport(config as SMTPTransport.Options);
 	}
 
 	async sendMail(message: IMessage): Promise<void> {
