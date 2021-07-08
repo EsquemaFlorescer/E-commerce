@@ -34,6 +34,7 @@ export class User {
 	public ban?: boolean;
 	public reason_for_ban?: string;
 	public token_version?: number | null;
+	public failed_attemps?: number | null;
 
 	public name: string;
 	public lastname?: string | undefined;

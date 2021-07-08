@@ -15,6 +15,7 @@ model User {
   ban            Boolean?  @default(false)
   reason_for_ban String?   @default("")
   token_version  Int?      @default(0)
+  failed_attemps Int?      @default(0)
   ip             String?
   name           String
   lastname       String?

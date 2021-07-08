@@ -3,6 +3,9 @@ import { Request } from 'express';
 import { SqliteUsersRepository } from '@v1/repositories/implementations';
 import { IUsersRepository } from '@v1/repositories';
 
+import { IMailProvider } from '@v1/providers';
+import { MailTrapMailProvider } from '@v1/providers/implementations';
+
 import { verify, sign } from 'jsonwebtoken';
 import { compare } from 'bcrypt';
 import { isBanned } from '@v1/utils/IsBanned';
@@ -15,7 +18,7 @@ type loginRequestType = {
 };
 
 class CreateSessionService {
-	constructor(private usersRepository: IUsersRepository) {}
+	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
 	async create(loginRequest: loginRequestType, authHeader: string | undefined) {
 		try {
@@ -23,37 +26,31 @@ class CreateSessionService {
 			const jwt_access_token = String(process.env.JWT_ACCESS_TOKEN);
 			const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN);
 
+			if (authHeader == undefined) throw new Error('No token was found.');
 			// jwt access token from headers
-			const token = authHeader?.split(' ')[1];
+			const token = authHeader && authHeader.split(' ')[1];
 
-			if (authHeader == undefined) throw new Error('No token was found');
-			if (token == undefined)
-				throw new Error(`
-        Your token must include Bearer:\n
-          example: 'Bearer <your_token>'
-      `);
+			if (token == undefined) throw new Error(`Your token must include Bearer`);
 
 			// get information from authorization header
-			const access_token = verify(token, jwt_access_token);
-			const user = await this.usersRepository.findById(access_token['id']);
-			if (user == null) {
-				return {};
-			}
+			const { id, token_version }: any = verify(token, jwt_access_token);
 
-			if (user.token_version !== access_token['token_version']) {
-				throw new Error('Your session was invalidated.');
-			}
+			const user = await this.usersRepository.findById(id);
+
+			if (user == null) throw new Error("User with payload id doesn't exist.");
+
+			if (user.token_version !== token_version) throw new Error('Your session was invalidated.');
 
 			isBanned(user.ban, user.shadow_ban);
 
-			const jwt_user = {
-				id: access_token['id'],
-				token_version: access_token['token_version'],
+			const jwt_info = {
+				id,
+				token_version,
 			};
 
 			// giving the user a refresh token
 			const refresh_token = sign(
-				jwt_user, // embbeding user info in jwt
+				jwt_info, // embbeding user info in jwt
 				jwt_refresh_token, // refresh token secret
 				{ expiresIn: '168h' } // 7 days
 			);
@@ -64,31 +61,80 @@ class CreateSessionService {
 			};
 		} catch (error) {
 			if (error.message == 'Your session was invalidated.') {
-				throw new Error('Your session was invalidated.');
+				throw new Error(error.message);
 			}
 
 			const { username, userhash, email, password } = loginRequest;
 
 			if (email == undefined) {
-				const user = await this.usersRepository.findUsername(
-					username,
-					userhash
-				);
-				isBanned(user[0].ban, user[0].shadow_ban);
-				if (user.length == 0) throw new Error('Wrong username!');
-
-				const comparePassword = await compare(password, user[0].password);
-				if (comparePassword != true) throw new Error('Wrong password!');
-
 				const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN);
 
-				const [{ id, token_version }] = user;
-				const jwt_user = {
-					id,
-					token_version,
-				};
+				// find user
+				const [user] = await this.usersRepository.findUsername(username, userhash);
 
-				const refresh_token = sign(jwt_user, jwt_refresh_token, {
+				if (!user) throw new Error('Wrong username!');
+
+				if (user.failed_attemps && user.failed_attemps >= 5) {
+					const { id, created_at, name, email, password } = user;
+
+					await this.usersRepository.update({
+						id,
+						created_at,
+						name,
+						email,
+						password,
+						failed_attemps: 0,
+					});
+
+					await this.mailProvider.sendMail({
+						to: {
+							name,
+							email,
+						},
+						from: {
+							name: 'NeoExpensive Team',
+							email: 'equipe@neoexpensive.com',
+						},
+
+						subject: `${user.failed_attemps} Failed login attemps were made to your account ${user.name}.`,
+						body: `<p>${user.name} contact us if it wasn't trying to login.</p>`,
+					});
+
+					throw new Error(
+						'You failed to login more than 5 times, we sent you a confirmation e-mail.'
+					);
+				}
+
+				// check if user is banned
+				isBanned(user.ban, user.shadow_ban);
+				const { id, created_at, name, token_version, failed_attemps } = user;
+
+				const comparePassword = await compare(password, user.password);
+				if (comparePassword != true) {
+					if (failed_attemps == null) return {};
+
+					await this.usersRepository.update({
+						id,
+						created_at,
+						name,
+						email: user.email,
+						password: user.password,
+						failed_attemps: failed_attemps + 1,
+					});
+
+					throw new Error('Wrong password!');
+				}
+
+				await this.usersRepository.update({
+					id,
+					created_at,
+					name,
+					email: user.email,
+					password: user.password,
+					failed_attemps: 0,
+				});
+
+				const refresh_token = sign({ id, token_version }, jwt_refresh_token, {
 					expiresIn: '168h',
 				});
 
@@ -98,26 +144,79 @@ class CreateSessionService {
 				};
 			}
 			// searches user with input email
-			const user = await this.usersRepository.findByEmail(email);
-			isBanned(user[0].ban, user[0].shadow_ban);
+			const [user] = await this.usersRepository.findByEmail(email);
 
 			// if there isn't a user with input email
-			if (user.length == 0) throw new Error('Wrong e-mail!');
+			if (!user) throw new Error('Wrong e-mail!');
+
+			// check if user failed login 5 or more times consecutively
+			if (user.failed_attemps && user.failed_attemps >= 5) {
+				const { id, created_at, name, email, password } = user;
+
+				await this.usersRepository.update({
+					id,
+					created_at,
+					name,
+					email,
+					password,
+					failed_attemps: 0,
+				});
+
+				await this.mailProvider.sendMail({
+					to: {
+						name,
+						email,
+					},
+					from: {
+						name: 'NeoExpensive Team',
+						email: 'equipe@neoexpensive.com',
+					},
+
+					subject: `${user.failed_attemps} Failed login attemps were made to your account ${user.name}.`,
+					body: `<p>${user.name} contact us if it wasn't trying to login.</p>`,
+				});
+
+				throw new Error(
+					'You failed to login more than 5 times, we sent you a confirmation e-mail.'
+				);
+			}
+
+			// check if user is banned
+			isBanned(user.ban, user.shadow_ban);
+			const { id, created_at, name, token_version, failed_attemps } = user;
 
 			// compare from input password and database password
-			const comparePassword = await compare(password, user[0].password);
-
+			const comparePassword = await compare(password, user.password);
 			// if passwords do not match up
-			if (comparePassword != true) throw new Error('Wrong password!');
+			if (comparePassword != true) {
+				if (failed_attemps == null) return {};
+				await this.usersRepository.update({
+					id,
+					created_at,
+					name,
+					email: user.email,
+					password: user.password,
+					failed_attemps: failed_attemps + 1,
+				});
+
+				throw new Error('Wrong password!');
+			}
+
+			await this.usersRepository.update({
+				id,
+				created_at,
+				name,
+				email: user.email,
+				password: user.password,
+				failed_attemps: 0,
+			});
 
 			// if everything goes as normal
 			// jwt refresh token secret
 			const jwt_refresh_token = String(process.env.JWT_REFRESH_TOKEN);
-
-			const [{ id, name }] = user;
 			const jwt_user = {
 				id,
-				token_version: user[0].token_version,
+				token_version,
 			};
 
 			// giving the user a refresh token
@@ -138,13 +237,13 @@ class CreateSessionService {
 export default async (request: Request) => {
 	try {
 		const UsersRepository = new SqliteUsersRepository();
-		const CreateSession = new CreateSessionService(UsersRepository);
+		const MailProvider = new MailTrapMailProvider();
+		const CreateSession = new CreateSessionService(UsersRepository, MailProvider);
 
-		const { refresh_token, jwt_login, social_login } =
-			await CreateSession.create(
-				request.body,
-				request.headers['authorization']
-			);
+		const { refresh_token, jwt_login, social_login } = await CreateSession.create(
+			request.body,
+			request.headers['authorization']
+		);
 
 		return {
 			jwt_login,
