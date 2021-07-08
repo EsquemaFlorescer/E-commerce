@@ -2,29 +2,14 @@ import request from 'supertest';
 import { sign } from 'jsonwebtoken';
 
 import { app } from '@src/app';
+import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-import { prisma } from '@src/prisma';
+import { ApiResponse } from '../types/API';
 
-type ApiResponse<T> = {
-	status: number;
-
-	body: {
-		message: string;
-		user: T;
-		users: T;
-	};
-};
-
-var ReadAllUsersResponse: User = {
+var ReadAllUsersResponse = {
 	id: '',
-	created_at: new Date(),
-	admin: false,
 	name: '',
-	lastname: '',
-	username: '',
-	userhash: '',
-	cpf: '',
 	email: '',
 	password: '',
 };
@@ -58,10 +43,12 @@ const CreateUser = async ({ name, email, password }: CreateUserType) => {
 describe('Read User', () => {
 	beforeAll(async () => {
 		await prisma.user.deleteMany();
+		await prisma.$disconnect();
 	});
 
 	afterAll(async () => {
 		await prisma.user.deleteMany();
+		await prisma.$disconnect();
 	});
 
 	it('should create multiple users', async () => {
@@ -94,13 +81,7 @@ describe('Read User', () => {
 
 		ReadAllUsersResponse = {
 			id: users[0].id,
-			created_at: users[0].created_at,
-			admin: users[0].admin,
 			name: users[0].name,
-			lastname: users[0].lastname,
-			username: users[0].username,
-			userhash: users[0].userhash,
-			cpf: users[0].cpf,
 			email: users[0].email,
 			password: users[0].password,
 		};

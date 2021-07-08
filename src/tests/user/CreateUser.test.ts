@@ -6,27 +6,9 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-type CreateUserRequestType = {
-	name: string;
-	email: string;
-	password: string;
-};
+import { ApiResponse } from '../types/API';
 
-type ApiResponse<T> = {
-	status: number;
-
-	body: {
-		message: string;
-		user: T;
-		access_token: string;
-	};
-
-	headers: {
-		authorization: string;
-	};
-};
-
-const CreateUserRequest: CreateUserRequestType = {
+const CreateUserRequest = {
 	name: 'vitor',
 	email: 'vitor@gmail.com',
 	password: '123',

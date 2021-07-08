@@ -6,21 +6,7 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-type ApiResponse<T> = {
-	status: number;
-
-	body: {
-		message: string;
-		user: T;
-		access_token: string;
-		refresh_token: string;
-		jwt_login: boolean;
-	};
-
-	headers: {
-		authorization: string;
-	};
-};
+import { ApiResponse } from '../types/API';
 
 const CreateUserRequest = {
 	name: 'test',
@@ -28,17 +14,8 @@ const CreateUserRequest = {
 	password: '123',
 };
 
-var DeleteUserStore: User = {
+var DeleteUserStore = {
 	id: '',
-	created_at: new Date(),
-	admin: false,
-	name: '',
-	lastname: '',
-	username: '',
-	userhash: '',
-	cpf: '',
-	email: '',
-	password: '',
 };
 
 var tokens = {
@@ -100,15 +77,6 @@ describe('Delete user', () => {
 
 		DeleteUserStore = {
 			id: user.id,
-			created_at: user.created_at,
-			admin: user.admin,
-			name: user.name,
-			lastname: user.lastname,
-			username: user.username,
-			userhash: user.userhash,
-			cpf: user.cpf,
-			email: user.email,
-			password: user.password,
 		};
 	});
 

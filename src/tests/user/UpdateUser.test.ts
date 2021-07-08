@@ -6,6 +6,8 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
+import { ApiResponse } from '../types/API';
+
 const CreateUserRequest = {
 	name: 'test',
 	email: 'test@test.com',
@@ -21,31 +23,8 @@ const UpdateUserRequest = {
 	password: '123',
 };
 
-type ApiResponse<T> = {
-	status: number;
-	body: {
-		message: string;
-		jwt_login: boolean;
-		user: T;
-		access_token: string;
-		refresh_token: string;
-	};
-	headers: {
-		authorization: string;
-	};
-};
-
-var UpdateUserStore: User = {
+var UpdateUserStore = {
 	id: '',
-	created_at: new Date(),
-	admin: false,
-	name: '',
-	lastname: '',
-	username: '',
-	userhash: '',
-	cpf: '',
-	email: '',
-	password: '',
 };
 
 var tokens = {
@@ -107,15 +86,6 @@ describe('Update user', () => {
 
 		UpdateUserStore = {
 			id: user.id,
-			created_at: user.created_at,
-			admin: user.admin,
-			name: user.name,
-			lastname: user.lastname,
-			username: user.username,
-			userhash: user.userhash,
-			cpf: user.cpf,
-			email: user.email,
-			password: user.password,
 		};
 	});
 
