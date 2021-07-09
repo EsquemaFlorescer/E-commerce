@@ -25,7 +25,7 @@ export class SqliteUsersRepository implements IUsersRepository {
 		return users;
 	}
 
-	async findById(id: string): Promise<UserType | null> {
+	async findById(id: string): Promise<UserType> {
 		const user = await prisma.user.findUnique({
 			where: {
 				id,
@@ -51,6 +51,8 @@ export class SqliteUsersRepository implements IUsersRepository {
 				},
 			},
 		});
+
+		if (user == null) throw new Error('FindUserById method failed.');
 
 		return user;
 	}
