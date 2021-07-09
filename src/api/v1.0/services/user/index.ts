@@ -4,6 +4,7 @@ import UpdateUser from './UpdateUser';
 import DeleteUser from './DeleteUser';
 
 import ActivateUser from './ActivateUser';
+import ForgotPassword from './ForgotPassword';
 
 import CreateAddress from './CreateAddress';
 import DeleteAddress from './DeleteAddress';
@@ -26,4 +27,5 @@ export {
 	DeleteCart,
 	LoadAdmin,
 	BanUser,
+	ForgotPassword,
 };

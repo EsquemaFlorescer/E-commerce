@@ -10,6 +10,7 @@ import {
 	CreateCart,
 	DeleteCart,
 	ActivateUser,
+	ForgotPassword,
 } from '@v1/services/user';
 
 export const UserController = {
@@ -104,5 +105,13 @@ export const UserController = {
 			user,
 			access_token,
 		});
+	},
+
+	async forgotPassword(request: Request, response: Response) {
+		const { error, status, message } = await ForgotPassword(request);
+
+		if (error) return response.status(status).json(message);
+
+		return response.status(status).json(message);
 	},
 };
