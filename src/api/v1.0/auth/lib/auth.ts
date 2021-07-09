@@ -17,18 +17,30 @@ type LoginType = {
 };
 
 export const auth = {
+	/**
+	 * Creates an acess_token
+	 * @function access_token
+	 */
 	access_token({ id, token_version }: info, expiresIn: string) {
 		const access_token = createAccessToken({ id, token_version }, expiresIn);
 
 		return access_token;
 	},
 
+	/**
+	 * Creates a refesh_token
+	 * @function refresh_token
+	 */
 	refresh_token({ id, token_version }: info, expiresIn: string) {
 		const refresh_token = createRefreshToken({ id, token_version }, expiresIn);
 
 		return refresh_token;
 	},
 
+	/**
+	 * Verify and decodes a JWT token
+	 * @function verify
+	 */
 	verify(authHeader: string | undefined, type: 'access' | 'refresh') {
 		if (authHeader == undefined) throw new Error('Token not supplied to auth lib.');
 
@@ -41,6 +53,10 @@ export const auth = {
 		return payload;
 	},
 
+	/**
+	 * Login with e-mail service
+	 * @function loginEmail
+	 */
 	async loginEmail({ email, password }: LoginType) {
 		if (email == undefined) throw new Error('a');
 		const UsersRepository = new SqliteUsersRepository();
@@ -54,6 +70,10 @@ export const auth = {
 		};
 	},
 
+	/**
+	 * Login with username
+	 * @function loginUsername
+	 */
 	async loginUsername({ username, userhash, password }: LoginType) {
 		if (username == undefined || userhash == undefined) return {};
 
