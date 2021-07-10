@@ -61,7 +61,7 @@ export const auth = {
 		if (email == undefined) throw new Error('Could not find an e-mail to auth.');
 		const UsersRepository = new SqliteUsersRepository();
 		const EmailLogin = new emailLogin(UsersRepository);
-		const { user, matchPassword, failed_too_many } = await EmailLogin.handle(email, password);
+		const { user, failed_too_many, matchPassword } = await EmailLogin.handle(email, password);
 
 		return {
 			user,

@@ -68,6 +68,7 @@ class CreateSessionService {
 			if (error.message == 'Your session was invalidated.') {
 				throw new Error(error.message);
 			}
+
 			if (loginRequest.email == undefined) {
 				// find user
 				const { user, failed_too_many, matchPassword } = await auth.loginUsername(loginRequest);
@@ -116,11 +117,13 @@ class CreateSessionService {
 				};
 			}
 
-			const { user, failed_too_many, matchPassword } = await auth.loginEmail(loginRequest);
+			const { user, matchPassword, failed_too_many } = await auth.loginEmail(loginRequest);
+			if (!user) throw new Error('Could not find an user.');
 
-			if (failed_too_many) {
-				const { name, email, password, failed_attemps } = failed_too_many;
-				await this.usersRepository.update(failed_too_many);
+			if (failed_too_many == true) {
+				const { name, email, failed_attemps } = user;
+
+				await this.usersRepository.update(user);
 
 				await this.mailProvider.sendMail({
 					to: {
@@ -144,13 +147,11 @@ class CreateSessionService {
 				);
 			}
 
-			if (matchPassword) {
-				await this.usersRepository.update(matchPassword);
+			if (matchPassword == true) {
+				await this.usersRepository.update(user);
 
 				throw new Error('Wrong password!');
 			}
-
-			if (user == null) return {};
 
 			const { id, token_version } = user;
 
