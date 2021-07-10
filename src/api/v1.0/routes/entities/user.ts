@@ -26,7 +26,7 @@ router.post(
 	UserController.forgotPassword
 );
 
-router.post('/address', authenticate, UserController.createAddress);
+router.post('/address/:id?', authenticate, UserController.createAddress);
 router.delete('/address/:id?', authenticate, UserController.deleteAddress);
 
 router.post('/cart/:id?', authenticate, UserController.createCart);
