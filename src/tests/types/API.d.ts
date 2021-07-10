@@ -11,5 +11,6 @@ export interface ApiResponse<T> {
 		users: T;
 		social_login: boolean;
 		jwt_login: boolean;
+		address: T;
 	};
 }
