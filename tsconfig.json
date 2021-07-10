@@ -35,6 +35,6 @@
 			"@v1/providers/*": ["src/api/v1.0/providers/*"]
 		}
 	},
-	"exclude": ["node_modules"],
+	"exclude": ["node_modules", "tests"],
 	"include": ["./src/**/*"]
 }
