@@ -5,7 +5,7 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-import { ApiResponse } from '../types/API';
+import { ApiResponse } from '@src/tests/types/API';
 
 var ReadAllUsersResponse = {
 	id: '',
@@ -40,17 +40,7 @@ const CreateUser = async ({ name, email, password }: CreateUserType) => {
 	};
 };
 
-describe('Read User', () => {
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
-
-	afterAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
-
+export const ReadUserTest = () => {
 	it('should create multiple users', async () => {
 		const { message, user } = await CreateUser({
 			name: 'vitor',
@@ -126,4 +116,14 @@ describe('Read User', () => {
 
 		expect(created_at).toBeLessThanOrEqual(created_at2);
 	});
-});
+
+	beforeAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+
+	afterAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+};

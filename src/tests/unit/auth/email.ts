@@ -90,12 +90,13 @@ export const emailTest = () => {
 				},
 			});
 
-			const { failed_too_many } = await auth.loginEmail(loginInfo);
+			const { user, failed_too_many } = await auth.loginEmail(loginInfo);
 
-			expect(failed_too_many?.id?.length).toBeGreaterThan(1);
-			expect(failed_too_many?.created_at).toBeTruthy();
-			expect(failed_too_many?.name?.length).toBeGreaterThan(1);
-			expect(failed_too_many?.token_version).toBe(1);
+			expect(failed_too_many).toBe(true);
+			expect(user?.id?.length).toBeGreaterThan(1);
+			expect(user?.created_at).toBeTruthy();
+			expect(user?.name?.length).toBeGreaterThan(1);
+			expect(user?.token_version).toBe(1);
 		} catch (error) {}
 	});
 
@@ -108,6 +109,7 @@ export const emailTest = () => {
 		const { status, body }: ApiResponse<void> = await request(app)
 			.post('/v1/user/login')
 			.send(loginInfo);
+		console.log(body);
 		expect(status).toBe(400);
 		expect(body).toBe('You failed to login more than 5 times, we sent you a confirmation e-mail.');
 	});
@@ -128,10 +130,12 @@ export const emailTest = () => {
 			password: '123',
 		};
 
-		const { user } = await auth.loginEmail(loginInfo);
+		const { user, matchPassword, failed_too_many } = await auth.loginEmail(loginInfo);
 		expect(user?.name).toBe(loginInfo.name);
 		expect(user?.email).toBe(loginInfo.email);
 		expect(user?.failed_attemps).toBe(0);
+		expect(matchPassword).toBe(false);
+		expect(failed_too_many).toBe(false);
 	});
 
 	beforeAll(async () => {

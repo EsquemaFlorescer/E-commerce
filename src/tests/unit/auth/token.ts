@@ -2,6 +2,30 @@ import auth from '@v1/auth';
 import { sign, verify } from 'jsonwebtoken';
 
 export const tokenTest = () => {
+	it('should fail to find token', async () => {
+		try {
+			const token = auth.verify(undefined, 'access');
+		} catch (error) {
+			expect(error.message).toBe('Token not supplied to auth lib.');
+		}
+	});
+
+	it('should fail to verify bearer token', async () => {
+		const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
+		const tokenInfo = {
+			id: '1',
+			token_version: 0,
+		};
+
+		const access_token = sign(tokenInfo, access_token_secret);
+
+		try {
+			const token = auth.verify(access_token, 'access');
+		} catch (error) {
+			expect(error.message).toBe('Your token must include Bearer.');
+		}
+	});
+
 	it('should create an access_token', async () => {
 		const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
 
@@ -40,30 +64,6 @@ export const tokenTest = () => {
 
 		expect(payload['id']).toBe(jwt_payload['id']);
 		expect(payload['token_version']).toBe(jwt_payload['token_version']);
-	});
-
-	it('should fail to find token', async () => {
-		try {
-			const token = auth.verify(undefined, 'access');
-		} catch (error) {
-			expect(error.message).toBe('Token not supplied to auth lib.');
-		}
-	});
-
-	it('should fail to verify bearer token', async () => {
-		const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
-		const tokenInfo = {
-			id: '1',
-			token_version: 0,
-		};
-
-		const access_token = sign(tokenInfo, access_token_secret);
-
-		try {
-			const token = auth.verify(access_token, 'access');
-		} catch (error) {
-			expect(error.message).toBe('Your token must include Bearer.');
-		}
 	});
 
 	it('should verify token with success!', async () => {

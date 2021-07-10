@@ -6,7 +6,7 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-import { ApiResponse } from '../types/API';
+import { ApiResponse } from '@src/tests/types/API';
 
 const CreateUserRequest = {
 	name: 'test',
@@ -32,29 +32,20 @@ var tokens = {
 	refresh_token: '',
 };
 
-describe('Update user', () => {
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
-
-	afterAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
-
+export const UpdateUserTest = () => {
 	it('should send token to e-mail', async () => {
 		const { name, email, password } = CreateUserRequest;
 
-		const { status, body }: ApiResponse<void> = await request(app).post('/v1/user').send({
-			name,
-			email,
-			password,
-		});
+		try {
+			const { status, body }: ApiResponse<void> = await request(app).post('/v1/user').send({
+				name,
+				email,
+				password,
+			});
+			expect(status).toBe(200);
 
-		expect(status).toBe(200);
-
-		expect(body).toBe('Sent verification message to your e-mail!');
+			expect(body).toBe('Sent verification message to your e-mail!');
+		} catch (error) {}
 	});
 
 	it('should create user with e-mail token', async () => {
@@ -126,4 +117,14 @@ describe('Update user', () => {
 		expect(user.name).toBe(UpdateUserRequest.name);
 		expect(user.email).toBe(UpdateUserRequest.email);
 	});
-});
+
+	beforeAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+
+	afterAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+};

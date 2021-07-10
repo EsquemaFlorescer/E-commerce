@@ -6,7 +6,7 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-import { ApiResponse } from '../types/API';
+import { ApiResponse } from '@src/tests/types/API';
 
 const CreateUserRequest = {
 	name: 'test',
@@ -14,24 +14,26 @@ const CreateUserRequest = {
 	password: '123',
 };
 
-var DeleteUserStore = {
-	id: '',
-};
+export const CreateUserTest = () => {
+	it('should create user entity', async () => {
+		const user = new User({
+			name: 'test',
+			lastname: 'jest',
+			email: 'test@test.com',
+			password: '123',
+			ip: '0.0.0.0',
+			token_version: 0,
+			cpf: '000.000.000-00',
+		});
 
-var tokens = {
-	access_token: '',
-	refresh_token: '',
-};
-
-describe('Delete user', () => {
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
-
-	afterAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
+		expect(user.name).toBe('test');
+		expect(user.lastname).toBe('jest');
+		expect(user.email).toBe('test@test.com');
+		expect(user.cpf).toBe('000.000.000-00');
+		expect(user.password.slice(1, 3)).toBe('2b');
+		expect(user.ip?.slice(1, 3)).toBe('2b');
+		expect(user.token_version).toBe(0);
+		expect(String(user.userhash).length).toBe(4);
 	});
 
 	it('should send token to e-mail', async () => {
@@ -44,6 +46,7 @@ describe('Delete user', () => {
 		});
 
 		expect(status).toBe(200);
+
 		expect(body).toBe('Sent verification message to your e-mail!');
 	});
 
@@ -62,8 +65,6 @@ describe('Delete user', () => {
 
 		const { access_token, user, message } = body;
 
-		tokens.access_token = access_token;
-
 		expect(headers.authorization.length).toBeGreaterThan(1);
 		expect(access_token.length).toBeGreaterThan(1);
 
@@ -74,35 +75,15 @@ describe('Delete user', () => {
 
 		const comparePassword = await compare(password, user.password);
 		expect(comparePassword).toBeTruthy();
-
-		DeleteUserStore = {
-			id: user.id,
-		};
 	});
 
-	it('should authenticate user', async () => {
-		const { access_token } = tokens;
-
-		const { status, body }: ApiResponse<void> = await request(app)
-			.post('/v1/user/login')
-			.set('authorization', `Bearer ${access_token}`);
-
-		tokens.refresh_token = body.refresh_token;
-
-		expect(status).toBe(200);
-		expect(body.jwt_login).toBe(true);
+	beforeAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
 	});
 
-	it('should delete user', async () => {
-		const { id } = DeleteUserStore;
-
-		const { status }: ApiResponse<void> = await request(app)
-			.delete(`/v1/user/${id}`)
-			.set('authorization', `Bearer ${tokens.refresh_token}`);
-
-		const users = await prisma.user.findMany();
-
-		expect(status).toBe(200);
-		expect(users.length).toBe(0);
+	afterAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
 	});
-});
+};

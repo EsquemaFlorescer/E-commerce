@@ -6,25 +6,24 @@ import { app } from '@src/app';
 import { prisma } from '@src/prisma';
 import { User } from '@v1/entities';
 
-import { ApiResponse } from '../types/API';
+import { ApiResponse } from '@src/tests/types/API';
 
 const CreateUserRequest = {
-	name: 'vitor',
-	email: 'vitor@gmail.com',
+	name: 'test',
+	email: 'test@test.com',
 	password: '123',
 };
 
-describe('User Register', () => {
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
+var DeleteUserStore = {
+	id: '',
+};
 
-	afterAll(async () => {
-		await prisma.user.deleteMany();
-		await prisma.$disconnect();
-	});
+var tokens = {
+	access_token: '',
+	refresh_token: '',
+};
 
+export const DeleteUserTest = () => {
 	it('should send token to e-mail', async () => {
 		const { name, email, password } = CreateUserRequest;
 
@@ -35,7 +34,6 @@ describe('User Register', () => {
 		});
 
 		expect(status).toBe(200);
-
 		expect(body).toBe('Sent verification message to your e-mail!');
 	});
 
@@ -54,6 +52,8 @@ describe('User Register', () => {
 
 		const { access_token, user, message } = body;
 
+		tokens.access_token = access_token;
+
 		expect(headers.authorization.length).toBeGreaterThan(1);
 		expect(access_token.length).toBeGreaterThan(1);
 
@@ -64,5 +64,45 @@ describe('User Register', () => {
 
 		const comparePassword = await compare(password, user.password);
 		expect(comparePassword).toBeTruthy();
+
+		DeleteUserStore = {
+			id: user.id,
+		};
 	});
-});
+
+	it('should authenticate user', async () => {
+		const { access_token } = tokens;
+
+		const { status, body }: ApiResponse<void> = await request(app)
+			.post('/v1/user/login')
+			.set('authorization', `Bearer ${access_token}`);
+
+		tokens.refresh_token = body.refresh_token;
+
+		expect(status).toBe(200);
+		expect(body.jwt_login).toBe(true);
+	});
+
+	it('should delete user', async () => {
+		const { id } = DeleteUserStore;
+
+		const { status }: ApiResponse<void> = await request(app)
+			.delete(`/v1/user/${id}`)
+			.set('authorization', `Bearer ${tokens.refresh_token}`);
+
+		const users = await prisma.user.findMany();
+
+		expect(status).toBe(200);
+		expect(users.length).toBe(0);
+	});
+
+	beforeAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+
+	afterAll(async () => {
+		await prisma.user.deleteMany();
+		await prisma.$disconnect();
+	});
+};
