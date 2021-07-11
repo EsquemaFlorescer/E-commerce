@@ -31,8 +31,7 @@ class CreateDashSessionService {
 			const payload = verify(token, dash_access_token);
 			const jwt_user = {
 				id: payload['id'],
-				name: payload['name'],
-				email: payload['email'],
+				token_version: payload['token_version'],
 			};
 
 			const refresh_token = sign(
@@ -82,11 +81,10 @@ export default async (request: Request) => {
 		const UsersRepository = new SqliteUsersRepository();
 		const CreateDashSession = new CreateDashSessionService(UsersRepository);
 
-		const { refresh_token, jwt_login, social_login } =
-			await CreateDashSession.login(
-				request.body,
-				request.headers['authorization']
-			);
+		const { refresh_token, jwt_login, social_login } = await CreateDashSession.login(
+			request.body,
+			request.headers['authorization']
+		);
 
 		return {
 			jwt_login,
