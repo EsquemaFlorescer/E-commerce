@@ -53,9 +53,9 @@ class CreateSessionService {
 
 			if (user && user.confirmed == false) throw new Error('Activate your account first.');
 
-			if (user.token_version !== token_version) throw new Error('Your session was invalidated.');
-
 			isBanned(user.ban, user.shadow_ban);
+
+			if (user.token_version !== token_version) throw new Error('Your session was invalidated.');
 
 			// giving the user a refresh token
 			const token = auth.refresh_token({ id, token_version }, '7d');
@@ -65,6 +65,12 @@ class CreateSessionService {
 				refresh_token: token,
 			};
 		} catch (error) {
+			if (error.message == 'Your banned. If you think this is a mistake contact our team.') {
+				throw new Error(error.message);
+			}
+			if (error.message == "Sorry, we couldn't complete your request, please try again later.") {
+				throw new Error(error.message);
+			}
 			if (error.message == 'Your session was invalidated.') {
 				throw new Error(error.message);
 			}
