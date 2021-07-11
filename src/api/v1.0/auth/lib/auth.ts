@@ -1,4 +1,10 @@
-import { createAccessToken, createRefreshToken, verifyToken } from './token';
+import {
+	createAccessToken,
+	createAdminAccessToken,
+	createAdminRefreshToken,
+	createRefreshToken,
+	verifyToken,
+} from './token';
 import { emailLogin } from './email';
 import { usernameLogin } from './username';
 
@@ -33,6 +39,26 @@ export const auth = {
 	 */
 	refresh_token({ id, token_version }: info, expiresIn: string) {
 		const refresh_token = createRefreshToken({ id, token_version }, expiresIn);
+
+		return refresh_token;
+	},
+
+	/**
+	 * Creates an access_token for admin users.
+	 * @function admin_access
+	 */
+	admin_access({ id, token_version }: info, expiresIn: string) {
+		const access_token = createAdminAccessToken({ id, token_version }, expiresIn);
+
+		return access_token;
+	},
+
+	/**
+	 * Create a refresh_token for admin users.
+	 * @function refresh_token
+	 */
+	admin_refresh({ id, token_version }: info, expiresIn: string) {
+		const refresh_token = createAdminRefreshToken({ id, token_version }, expiresIn);
 
 		return refresh_token;
 	},
