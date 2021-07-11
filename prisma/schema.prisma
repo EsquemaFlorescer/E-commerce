@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id             String    @id
-  created_at     DateTime
+  created_at     Int
   admin          Boolean?  @default(false)
   shadow_ban     Boolean?  @default(false)
   ban            Boolean?  @default(false)
@@ -67,7 +67,7 @@ model Cart {
 
 model Item {
   id             Int      @id @default(autoincrement())
-  created_at     DateTime @default(now())
+  created_at     Int
   name           String
   brand          String?
   short_name     String

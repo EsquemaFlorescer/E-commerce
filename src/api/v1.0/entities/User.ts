@@ -18,7 +18,7 @@ export function randomNumber(number: number) {
 
 interface optionalProps {
 	id?: string;
-	created_at?: Date;
+	created_at?: number;
 	admin?: {
 		username: string | any;
 		userhash: number | any;
@@ -27,7 +27,7 @@ interface optionalProps {
 
 export class User {
 	public readonly id: string;
-	public readonly created_at: Date;
+	public readonly created_at: number;
 	public readonly admin?: boolean;
 	public ip?: string;
 	public shadow_ban?: boolean;
@@ -57,7 +57,7 @@ export class User {
 		if (created_at) this.created_at = created_at;
 
 		// if no date was supplied, generate new ISO date
-		if (!created_at) this.created_at = new Date();
+		if (!created_at) this.created_at = Date.now();
 
 		if (!admin) this.admin = false;
 
