@@ -17,7 +17,7 @@ model User {
   token_version  Int       @default(0)
   failed_attemps Int       @default(0)
   confirmed      Boolean?  @default(false)
-  ip             String?
+  ip             String
   name           String
   lastname       String?
   username       String

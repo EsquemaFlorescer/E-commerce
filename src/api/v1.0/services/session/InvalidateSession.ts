@@ -12,7 +12,7 @@ class InvalidateSessionService {
 		try {
 			const userInfo = await this.usersRepository.findById(id);
 
-			if (userInfo == null || userInfo.token_version == null) {
+			if (userInfo == null || userInfo.ip == null || userInfo.token_version == null) {
 				return {};
 			}
 
@@ -23,6 +23,7 @@ class InvalidateSessionService {
 				email: userInfo.email,
 				password: userInfo.password,
 				token_version: userInfo.token_version + 1,
+				ip: userInfo.ip,
 			});
 		} catch (error) {
 			throw new Error(error.message);

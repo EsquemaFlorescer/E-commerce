@@ -16,7 +16,7 @@ class ForgotPasswordService {
 
 			const user = await this.usersRepository.findById(id);
 
-			if (user.token_version == null) throw new Error('Unexpected error.');
+			if (user.token_version == null || user.ip == null) throw new Error('Unexpected error.');
 
 			await this.usersRepository.update({
 				id: user.id,
@@ -24,6 +24,7 @@ class ForgotPasswordService {
 				name: user.name,
 				email: user.email,
 				password: user.password,
+				ip: user.ip,
 				token_version: user.token_version + 1,
 			});
 

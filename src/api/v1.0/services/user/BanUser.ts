@@ -10,10 +10,7 @@ import { MailTrapMailProvider } from '@v1/providers/implementations';
 import { ParsedQs } from 'qs';
 
 class BanUserService {
-	constructor(
-		private usersRepository: IUsersRepository,
-		private mailProvider: IMailProvider
-	) {}
+	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
 	async ban(id: string, { query, headers }: Request<ParsedQs>) {
 		try {
@@ -23,7 +20,7 @@ class BanUserService {
 			if (isShadowBan != 'undefined') {
 				const user = await this.usersRepository.findById(id);
 
-				if (user == null || user.token_version == null) {
+				if (user == null || user.token_version == null || user.ip == null) {
 					throw new Error('Did not find user with that id.');
 				}
 
@@ -36,6 +33,7 @@ class BanUserService {
 					shadow_ban: true,
 					ban: true,
 					reason_for_ban,
+					ip: user.ip,
 					token_version: user.token_version + 1,
 				});
 
@@ -44,7 +42,7 @@ class BanUserService {
 
 			const user = await this.usersRepository.findById(id);
 
-			if (user == null || user.token_version == null) {
+			if (user == null || user.token_version == null || user.ip == null) {
 				throw new Error('Did not find user with that id.');
 			}
 
@@ -57,6 +55,7 @@ class BanUserService {
 				shadow_ban: false,
 				ban: true,
 				reason_for_ban,
+				ip: user.ip,
 				token_version: user.token_version + 1,
 			});
 
@@ -72,7 +71,7 @@ class BanUserService {
 				throw new Error('No admin user was found with that JWT.');
 			}
 
-			this.mailProvider.sendMail({
+			await this.mailProvider.sendMail({
 				to: {
 					name: user.name,
 					email: user.email,

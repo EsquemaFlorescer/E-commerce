@@ -21,7 +21,7 @@ export class emailLogin {
 			const failed_too_many = check_failed_attemps(user);
 
 			if (failed_too_many) {
-				const { id, created_at, name, email, password, token_version } = user;
+				const { id, created_at, name, email, password, token_version, ip } = user;
 
 				return {
 					failed_too_many: true,
@@ -33,6 +33,7 @@ export class emailLogin {
 						email,
 						password: user.password,
 						failed_attemps: 0,
+						ip,
 						token_version: token_version + 1,
 					},
 				};
@@ -40,7 +41,7 @@ export class emailLogin {
 
 			isBanned(user.ban, user.shadow_ban);
 
-			const { id, created_at, name, token_version, failed_attemps } = user;
+			const { id, created_at, name, token_version, ip, failed_attemps } = user;
 
 			const matchPassword = await compare(password, user.password);
 			if (matchPassword == false) {
@@ -54,6 +55,7 @@ export class emailLogin {
 						email: user.email,
 						password: user.password,
 						token_version,
+						ip,
 						failed_attemps: failed_attemps + 1,
 					},
 				};
@@ -69,6 +71,7 @@ export class emailLogin {
 					email,
 					password: user.password,
 					token_version,
+					ip,
 					failed_attemps: 0,
 				},
 			};
