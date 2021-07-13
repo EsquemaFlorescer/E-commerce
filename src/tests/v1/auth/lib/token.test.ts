@@ -12,7 +12,7 @@ const tokenInfo = {
 	token_version: 0,
 };
 
-describe('', () => {
+describe('token', () => {
 	it('should create a normal access_token', async () => {
 		const access_token = token.createAccessToken(tokenInfo, '24h');
 		const decoded_token = jwt.verify(access_token, jwt_access_token_secret);

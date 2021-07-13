@@ -13,7 +13,7 @@ const dash_access_token_secret = String(process.env.DASH_ACCESS_TOKEN);
 const dash_refresh_token_secret = String(process.env.DASH_REFRESH_TOKEN);
 
 const tokenInfo = {
-	id: '11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000',
+	id: '00000000-0000-0000-0000-000000000000',
 	token_version: 0,
 };
 

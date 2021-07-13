@@ -33,7 +33,6 @@ describe('email', () => {
 		expect(user.id.length).toBe(36);
 		expect(user.name).toBe(userInfo.name);
 		expect(user.email).toBe(userInfo.email);
-
 		expect(matchPassword).toBe(false);
 		expect(failed_too_many).toBe(false);
 	});
