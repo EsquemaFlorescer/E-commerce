@@ -8,8 +8,9 @@ export interface ApiResponse<T> {
 		access_token: string;
 		refresh_token: string;
 		user: T;
-		item: T
-		items: T
+		item: T;
+		items: T;
+		image: T;
 		users: T;
 		social_login: boolean;
 		jwt_login: boolean;
