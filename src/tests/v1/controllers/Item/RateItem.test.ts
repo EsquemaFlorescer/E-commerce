@@ -29,9 +29,28 @@ describe('Read item', () => {
 		itemInfo.id = body.items[0].id;
 	});
 
-	it.todo('should rate an item');
+	it('should rate an item', async () => {
+		const { status, body }: ApiResponse<Item> = await request(app)
+			.post(`/v1/item/rate/${itemInfo.id}`)
+			.send({
+				one_star: 0,
+				two_star: 0,
+				three_star: 0,
+				four_star: 0,
+				five_star: 1,
+			});
 
-	it.todo('should list item rating');
+		expect(status).toBe(200);
+
+		expect(body.message).toBe('Rated item with success!');
+		expect(body.item).toBeTruthy();
+	});
+
+	it('should list item rating', async () => {
+		const { status }: ApiResponse<Item> = await request(app).get(`/v1/item/${itemInfo.id}`);
+
+		expect(status).toBe(202);
+	});
 
 	beforeAll(async () => await clear());
 });
