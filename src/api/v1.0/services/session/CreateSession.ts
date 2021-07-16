@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { compare } from 'bcrypt';
+import validator from "validator"
 
 import { SqliteUsersRepository } from '@v1/repositories/implementations';
 import { IUsersRepository } from '@v1/repositories';
@@ -74,9 +75,13 @@ class CreateSessionService {
 				throw new Error(error.message);
 			}
 
-			if (loginRequest.email == undefined) throw new Error('please insert e-mail');
-			if (loginRequest.username == undefined && loginRequest.userhash == undefined)
-				throw new Error('please insert username and userhash');
+			// if (loginRequest.email == undefined) throw new Error('please insert e-mail');
+			
+			// const isEmail = validator.isEmail(loginRequest.email)
+			// if (!isEmail) throw new Error('please insert a valid e-mail');
+
+			// if (!isEmail && loginRequest.username == undefined && loginRequest.userhash == undefined)
+			// 	throw new Error('please insert username and userhash');
 
 			if (loginRequest.email == undefined) {
 				// find user
