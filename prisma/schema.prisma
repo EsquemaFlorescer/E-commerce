@@ -43,6 +43,7 @@ model Address {
 model Rating {
   id         Int  @id @default(autoincrement())
   item_id    Int
+  average    Int
   one_star   Int
   two_star   Int
   three_star Int
