@@ -4,23 +4,20 @@ import { verify } from 'jsonwebtoken';
 import CheckRefreshToken from '@v1/utils/CheckRefreshToken';
 import { prisma } from '@src/prisma';
 
-export default async (
-	request: Request,
-	response: Response,
-	next: NextFunction
-) => {
+export default async (request: Request, response: Response, next: NextFunction) => {
 	try {
 		const refresh_token_secret = String(process.env.JWT_REFRESH_TOKEN);
 		// get JWT refresh token from headers
 		const authHeader = request.headers.authorization;
+		if (!authHeader || authHeader == undefined || authHeader == null)
+			throw new Error('A JWT is needed to use this route.');
 
 		// remove Bearer prefix from token
 		const token = String(authHeader && authHeader.split(' ')[1]);
 
-		const payload = verify(token, refresh_token_secret);
+		if (!token) throw new Error('No JWT refresh token was found! Redirect to login.');
 
-		if (!token)
-			throw new Error('No JWT refresh token was found! Redirect to login.');
+		const payload = verify(token, refresh_token_secret);
 
 		const userInfo = await prisma.user.findUnique({
 			where: {
