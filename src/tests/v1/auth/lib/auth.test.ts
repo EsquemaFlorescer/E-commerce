@@ -1,10 +1,10 @@
-import auth from '@v1/auth';
-import jwt from 'jsonwebtoken';
-
-import { prisma } from '@src/prisma';
-
 import request from 'supertest';
 import { app } from '@src/app';
+
+import { clear } from '../../clear';
+
+import auth from '@v1/auth';
+import jwt from 'jsonwebtoken';
 
 const jwt_access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
 const jwt_refresh_token_secret = String(process.env.JWT_REFRESH_TOKEN);
@@ -172,7 +172,5 @@ describe('auth', () => {
 		expect(failed_too_many).toBe(false);
 	});
 
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-	});
+	beforeAll(async () => await clear());
 });

@@ -7,6 +7,7 @@ import { prisma } from '@src/prisma';
 
 import request from 'supertest';
 import { app } from '@src/app';
+import { clear } from '../../clear';
 
 const jwt_access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
 
@@ -94,7 +95,5 @@ describe('email', () => {
 		expect(user.name).toBe(userInfo.name);
 	});
 
-	beforeAll(async () => {
-		await prisma.user.deleteMany();
-	});
+	beforeAll(async () => await clear());
 });
