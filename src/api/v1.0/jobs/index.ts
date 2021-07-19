@@ -11,12 +11,12 @@ export type DataType = {
 	token?: string;
 };
 
-export type JobsTypes = 'RegistrationMail' | 'ActivationMail';
+export type JobsTypes = 'RegistrationMail' | 'ActivationMail' | 'Order';
 export type JobsData = DataType;
 export type JobsOptions = Queue.JobOptions;
 
 export type Job<T> = {
-	key: 'RegistrationMail' | 'ActivationMail';
+	key: JobsTypes;
 	options: JobsOptions;
 	handle: Queue.ProcessCallbackFunction<T>;
 };
