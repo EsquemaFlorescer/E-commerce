@@ -1,13 +1,14 @@
 import { MailTrapMailProvider } from '@v1/providers/implementations';
 const mailProvider = new MailTrapMailProvider();
 
-export default {
+import { Job, JobsData } from './index';
+export const ActivationMail: Job<JobsData> = {
 	key: 'ActivationMail',
 	options: {
 		delay: 0,
-		attemps: 3,
+		attempts: 3,
 	},
-	async handle({ data }): Promise<void> {
+	async handle({ data }) {
 		const { user } = data;
 		const { name, email } = user;
 
@@ -16,8 +17,8 @@ export default {
 				name,
 				email,
 			},
-			subject: `Welcome to NeoExpensive ${user.name}`,
-			body: `<h1>Hi there ${user.name}, welcome!</h1>`,
+			subject: `Welcome to NeoExpensive ${name}`,
+			body: `<h1>Hi there ${name}, welcome!</h1>`,
 		});
 	},
 };

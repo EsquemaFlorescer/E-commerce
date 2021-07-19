@@ -1,13 +1,14 @@
 import { MailTrapMailProvider } from '@v1/providers/implementations';
 const mailProvider = new MailTrapMailProvider();
 
-export default {
+import { Job, JobsData } from './index';
+export const RegistrationMail: Job<JobsData> = {
 	key: 'RegistrationMail',
 	options: {
 		delay: 0,
-		attemps: 3,
+		attempts: 3,
 	},
-	async handle({ data }): Promise<void> {
+	async handle({ data }) {
 		const { user, token } = data;
 		const { name, email } = user;
 
