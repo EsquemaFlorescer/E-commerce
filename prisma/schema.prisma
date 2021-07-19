@@ -27,6 +27,19 @@ model User {
   password       String
   address        Address[]
   cart           Cart[]
+  payment        Payment[]
+}
+
+model Payment {
+  id          Int     @id @default(autoincrement())
+  user_id     String
+  method      String
+  card_brand  String?
+  card_number String?
+  card_month  String?
+  card_year   String?
+  card_code   String?
+  user        User    @relation(fields: [user_id], references: [id])
 }
 
 model Address {
