@@ -41,7 +41,7 @@ model Address {
 }
 
 model Rating {
-  id         Int  @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   item_id    Int
   average    Int
   one_star   Int
@@ -49,7 +49,8 @@ model Rating {
   three_star Int
   four_star  Int
   five_star  Int
-  item       Item @relation(fields: [item_id], references: [id])
+  message    String
+  item       Item   @relation(fields: [item_id], references: [id])
 }
 
 model Image {
@@ -78,5 +79,5 @@ model Item {
   discount       Int
   category       String
   image          Image[]
-  rating         Rating?
+  rating         Rating[]
 }
