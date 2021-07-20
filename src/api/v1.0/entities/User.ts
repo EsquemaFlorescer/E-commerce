@@ -1,6 +1,8 @@
 import { genSaltSync, hashSync } from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 
+import { Cart, Address, Payment } from '@v1/entities';
+
 export function randomNumber(length: number, chars?: string) {
 	var chars: string | undefined = '0123456789';
 
@@ -39,6 +41,10 @@ export class User {
 	public cpf?: string;
 	public email: string;
 	public password: string;
+
+	public cart?: Cart[];
+	public address?: Address[];
+	public payment?: Payment[];
 
 	constructor(
 		props: Omit<User, 'id' | 'created_at'>,
