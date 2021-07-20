@@ -28,6 +28,7 @@ model User {
   address        Address[]
   cart           Cart[]
   payment        Payment[]
+  Order          Order[]
 }
 
 model Payment {
@@ -40,17 +41,19 @@ model Payment {
   card_year   String?
   card_code   String?
   user        User    @relation(fields: [user_id], references: [id])
+  Order       Order[]
 }
 
 model Address {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   user_id     String
   postal_code String
   city        String
   state       String
   street      String
   number      Int
-  user        User   @relation(fields: [user_id], references: [id])
+  user        User    @relation(fields: [user_id], references: [id])
+  Order       Order[]
 }
 
 model Rating {
@@ -95,4 +98,19 @@ model Item {
   image          Image[]
   rating         Rating[]
   Cart           Cart[]
+  Order          Order[]
+}
+
+model Order {
+  id              Int     @id @default(autoincrement())
+  user_id         String
+  address_id      Int
+  item_id         Int
+  payment_id      Int
+  shipping_price  Int
+  all_items_price Int
+  payment         Payment @relation(fields: [payment_id], references: [id])
+  address         Address @relation(fields: [address_id], references: [id])
+  user            User    @relation(fields: [user_id], references: [id])
+  item            Item    @relation(fields: [item_id], references: [id])
 }
