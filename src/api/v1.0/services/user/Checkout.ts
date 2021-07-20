@@ -1,17 +1,28 @@
 import { Request } from 'express';
 
-import { ICartRepository, IItemsRepository } from '@v1/repositories';
-import { SqliteCartRepository, SqliteItemsRepository } from '@v1/repositories/implementations';
+import { ICartRepository, IItemsRepository, IOrderRepository } from '@v1/repositories';
+import {
+	SqliteCartRepository,
+	SqliteItemsRepository,
+	SqliteOrderRepository,
+} from '@v1/repositories/implementations';
+
+import { Order } from '@v1/entities';
 
 class CheckoutService {
-	constructor(private itemsRepository: IItemsRepository, private cartRepository: ICartRepository) {}
+	constructor(
+		private itemsRepository: IItemsRepository,
+		private cartRepository: ICartRepository,
+		private orderRepository: IOrderRepository
+	) {}
 
 	async execute(id: string, { query }: Request) {
 		try {
-			const singleItem = query.singleItem;
-			const item_id = query.item_id;
+			const address_id = Number(query.address_id);
+			const payment_id = Number(query.payment_id);
+			const item_id = Number(query.item_id);
 
-			if (!!singleItem === true) {
+			if (!!item_id === true) {
 				const item = await this.itemsRepository.findById(Number(item_id));
 
 				if (!item) throw new Error("This item doesn't exist.");
@@ -19,15 +30,41 @@ class CheckoutService {
 
 				if (percentagePrice === 0) {
 					const price: number = item.price + item.shipping_price;
+
+					const order = new Order({
+						user_id: id,
+						address_id,
+						item_id,
+						payment_id,
+						// frete API
+						shipping_price: item.shipping_price,
+						all_items_price: price,
+					});
+
+					await this.orderRepository.save(order);
+
 					return {
 						prices: price,
 					};
-				} else {
-					const price: number = item.price - percentagePrice * (item.price + item.shipping_price);
-					return {
-						price,
-					};
 				}
+
+				const price: number = item.price - percentagePrice * (item.price + item.shipping_price);
+
+				const order = new Order({
+					user_id: id,
+					address_id,
+					item_id,
+					payment_id,
+					// frete API
+					shipping_price: item.shipping_price,
+					all_items_price: price,
+				});
+
+				await this.orderRepository.save(order);
+
+				return {
+					prices: price,
+				};
 			}
 
 			// get user address and use it on frete API, get the shipping price and add on the item price
@@ -35,6 +72,7 @@ class CheckoutService {
 
 			if (cart.length === 0) throw new Error('Your cart is empty.');
 			var itemPrices: number[] = [];
+			var itemShipping: number[] = [];
 
 			for (const { item_id } of cart) {
 				try {
@@ -44,10 +82,11 @@ class CheckoutService {
 					const percentagePrice = Math.floor(item.discount / 100);
 
 					if (percentagePrice === 0) {
-						const price: number = item.price + item.shipping_price;
-						itemPrices.push(price);
+						itemShipping.push(item.shipping_price);
+						itemPrices.push(item.price);
 					} else {
-						const price: number = item.price - percentagePrice * (item.price + item.shipping_price);
+						const price: number = item.price - percentagePrice * item.price;
+						itemPrices.push(item.shipping_price);
 						itemPrices.push(price);
 					}
 				} catch (error) {
@@ -59,6 +98,19 @@ class CheckoutService {
 
 			const add = (a: number, b: number) => a + b;
 			const prices = itemPrices.reduce(add);
+			const shipping = itemShipping.reduce(add);
+			// validate if address, payment or item id exist
+			const order = new Order({
+				user_id: id,
+				address_id,
+				item_id,
+				payment_id,
+				// frete API
+				shipping_price: shipping,
+				all_items_price: prices,
+			});
+
+			await this.orderRepository.save(order);
 
 			return {
 				prices,
@@ -73,8 +125,9 @@ export default async (request: Request) => {
 	try {
 		const usersRepository = new SqliteItemsRepository();
 		const cartRepository = new SqliteCartRepository();
+		const orderRepository = new SqliteOrderRepository();
 
-		const checkout = new CheckoutService(usersRepository, cartRepository);
+		const checkout = new CheckoutService(usersRepository, cartRepository, orderRepository);
 
 		const { prices } = await checkout.execute(request.params.id, request);
 
