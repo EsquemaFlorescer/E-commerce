@@ -46,7 +46,7 @@ export class SqliteUsersRepository implements IUsersRepository {
 				cart: {
 					select: {
 						id: true,
-						item_id: true,
+						item: true,
 					},
 				},
 
