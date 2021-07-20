@@ -1,13 +1,35 @@
 import { Request } from 'express';
 
-import { IItemsRepository } from '@v1/repositories';
-import { SqliteItemsRepository } from '@v1/repositories/implementations';
+import { ICartRepository, IItemsRepository } from '@v1/repositories';
+import { SqliteCartRepository, SqliteItemsRepository } from '@v1/repositories/implementations';
 
 class DeleteItemService {
-	constructor(private itemsRepository: IItemsRepository) {}
+	constructor(private itemsRepository: IItemsRepository, private cartRepository: ICartRepository) {}
 
-	async delete(id: number) {
+	async delete(id: number, { query }: Request) {
 		try {
+			const confirmed = query.confirmed;
+
+			if (confirmed) {
+				await this.itemsRepository.delete(id);
+			}
+
+			const itemInCart = await this.cartRepository.list({ item_id: id });
+
+			var id_tmp = '';
+			var items: string[] = [];
+
+			for (const item of itemInCart) {
+				if (item.user_id === id_tmp) continue;
+				id_tmp = item.user_id;
+				items.push(item.user_id);
+			}
+
+			if (itemInCart.length > 0)
+				throw new Error(
+					`There are ${itemInCart.length} items is in ${items.length} user carts, use the option confirmed to execute it with admin priviledges.`
+				);
+
 			await this.itemsRepository.delete(id);
 		} catch (error) {
 			throw new Error(error.message);
@@ -18,9 +40,10 @@ class DeleteItemService {
 export default async (request: Request) => {
 	try {
 		const ItemsRepository = new SqliteItemsRepository();
-		const DeleteItem = new DeleteItemService(ItemsRepository);
+		const CartRepository = new SqliteCartRepository();
+		const DeleteItem = new DeleteItemService(ItemsRepository, CartRepository);
 
-		await DeleteItem.delete(Number(request.params.id));
+		await DeleteItem.delete(Number(request.params.id), request);
 
 		return {
 			status: 200,
@@ -30,7 +53,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to delete item.',
+			message: error.message,
 		};
 	}
 };

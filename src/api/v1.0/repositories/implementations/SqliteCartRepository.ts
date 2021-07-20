@@ -4,7 +4,17 @@ import { Cart } from '@prisma/client';
 import { prisma } from '@src/prisma';
 
 export class SqliteCartRepository implements ICartRepository {
-	async list(user_id: string): Promise<Cart[]> {
+	async list({ user_id, item_id }): Promise<Cart[]> {
+		if (item_id) {
+			const cart = await prisma.cart.findMany({
+				where: {
+					item_id,
+				},
+			});
+
+			return cart;
+		}
+
 		const cart = await prisma.cart.findMany({
 			where: {
 				user_id,
