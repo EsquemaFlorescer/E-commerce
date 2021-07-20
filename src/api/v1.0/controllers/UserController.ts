@@ -113,10 +113,10 @@ export const UserController = {
 	},
 
 	async checkout(request: Request, response: Response) {
-		const { error, status, message } = await service.Checkout(request);
+		const { error, status, message, prices } = await service.Checkout(request);
 
 		if (error) return response.status(status).json(message);
 
-		return response.status(status).json(message);
+		return response.status(status).json({ message, prices });
 	},
 };
