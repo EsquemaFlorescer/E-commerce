@@ -22,8 +22,8 @@ model User {
   lastname       String?
   username       String
   userhash       String
-  cpf            String?
-  email          String
+  cpf            String?   @unique
+  email          String    @unique
   password       String
   address        Address[]
   cart           Cart[]
