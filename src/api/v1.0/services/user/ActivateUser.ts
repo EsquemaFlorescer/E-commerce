@@ -4,15 +4,12 @@ import { verify } from 'jsonwebtoken';
 import { IUsersRepository } from '@v1/repositories';
 import { SqliteUsersRepository } from '@v1/repositories/implementations';
 
-import { IMailProvider } from '@v1/providers';
-import { MailTrapMailProvider } from '@v1/providers/implementations';
-
 import { User, randomNumber } from '@v1/entities';
 import auth from '@v1/auth';
 import Queue from '@v1/config/queue';
 
 class ActivateUserService {
-	constructor(private usersRepository: IUsersRepository, private mailRepository: IMailProvider) {}
+	constructor(private usersRepository: IUsersRepository) {}
 
 	async activate(authHeader: string | undefined, ip: string) {
 		try {
@@ -74,9 +71,8 @@ class ActivateUserService {
 export default async (request: Request) => {
 	try {
 		const UsersRepository = new SqliteUsersRepository();
-		const MailProvider = new MailTrapMailProvider();
 
-		const ActivateUser = new ActivateUserService(UsersRepository, MailProvider);
+		const ActivateUser = new ActivateUserService(UsersRepository);
 
 		const { user, access_token } = await ActivateUser.activate(
 			request.headers['authorization'],
