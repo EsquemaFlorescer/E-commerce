@@ -10,6 +10,12 @@ export class SqliteCartRepository implements ICartRepository {
 				where: {
 					item_id,
 				},
+				select: {
+					id: true,
+					item_id: true,
+					user_id: true,
+					item: true,
+				},
 			});
 
 			return cart;
@@ -18,6 +24,12 @@ export class SqliteCartRepository implements ICartRepository {
 		const cart = await prisma.cart.findMany({
 			where: {
 				user_id,
+			},
+			select: {
+				id: true,
+				item_id: true,
+				user_id: true,
+				item: true,
 			},
 		});
 

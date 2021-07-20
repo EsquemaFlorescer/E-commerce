@@ -78,6 +78,7 @@ model Cart {
   user_id String
   item_id Int
   user    User   @relation(fields: [user_id], references: [id])
+  item    Item   @relation(fields: [item_id], references: [id])
 }
 
 model Item {
@@ -93,4 +94,5 @@ model Item {
   category       String
   image          Image[]
   rating         Rating[]
+  Cart           Cart[]
 }
