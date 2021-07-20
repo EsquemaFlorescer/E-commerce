@@ -10,6 +10,8 @@ import { MailTrapMailProvider } from '@v1/providers/implementations';
 import { isBanned } from '@v1/utils/IsBanned';
 import auth from '@v1/auth';
 
+import Queue from '@v1/config/queue';
+
 type loginRequestType = {
 	email: string;
 	username: string;
@@ -30,27 +32,19 @@ class CreateSessionService {
 			ip = ip.slice(7);
 			const compareIPs = await compare(ip, user.ip);
 
-			if (compareIPs == false) {
-				await this.mailProvider.sendMail({
-					to: {
+			if (compareIPs === false) {
+				await Queue.add('NewDeviceMail', {
+					user: {
 						name: user.name,
 						email: user.email,
+						ip: user.ip,
 					},
-					from: {
-						name: 'NeoExpensive Team',
-						email: 'equipe@neoexpensive.com',
-					},
-
-					subject: `You logged in from a different IP!.`,
-					body: `
-						<p>${user.name} is this your ip: ${user.ip}</p>
-					`,
 				});
 			}
 
-			if (user == null) throw new Error("User with payload id doesn't exist.");
+			if (user === null) throw new Error("User with payload id doesn't exist.");
 
-			if (user && user.confirmed == false) throw new Error('Activate your account first.');
+			if (user && user.confirmed === false) throw new Error('Activate your account first.');
 
 			isBanned(user.ban, user.shadow_ban);
 			if (user.token_version !== token_version) throw new Error('Your session was invalidated.');
@@ -61,6 +55,7 @@ class CreateSessionService {
 			return {
 				jwt_login: true,
 				refresh_token: token,
+				user,
 			};
 		} catch (error) {
 			if (error.message == 'You are banned. If you think this is a mistake contact our team.') {
@@ -89,18 +84,12 @@ class CreateSessionService {
 
 					await this.usersRepository.update(user);
 
-					this.mailProvider.sendMail({
-						to: {
+					await Queue.add('FailedLoginMail', {
+						user: {
 							name,
 							email,
+							failed_attemps,
 						},
-						from: {
-							name: 'NeoExpensive Team',
-							email: 'equipe@neoexpensive.com',
-						},
-
-						subject: `${failed_attemps} Failed login attemps were made to your account ${name}.`,
-						body: `<p>${name} contact us if it wasn't trying to login.</p>`,
 					});
 
 					throw new Error(
@@ -124,6 +113,7 @@ class CreateSessionService {
 				return {
 					social_login: true,
 					refresh_token: token,
+					user,
 				};
 			}
 
@@ -135,21 +125,12 @@ class CreateSessionService {
 
 				await this.usersRepository.update(user);
 
-				this.mailProvider.sendMail({
-					to: {
+				await Queue.add('FailedLoginMail', {
+					user: {
 						name,
 						email,
+						failed_attemps,
 					},
-					from: {
-						name: 'NeoExpensive Team',
-						email: 'equipe@neoexpensive.com',
-					},
-
-					subject: `${failed_attemps} Failed login attemps were made to your account ${name}.`,
-					body: `
-						<p>${name} contact us if it wasn't trying to login.</p>
-						<button>Click here to end all your active sessions</button>
-					`,
 				});
 
 				throw new Error(
@@ -172,6 +153,7 @@ class CreateSessionService {
 			return {
 				social_login: true,
 				refresh_token: token,
+				user,
 			};
 		}
 	}

@@ -8,6 +8,7 @@ import { IMailProvider } from '@v1/providers';
 import { MailTrapMailProvider } from '@v1/providers/implementations';
 
 import { ParsedQs } from 'qs';
+import Queue from '@v1/config/queue';
 
 class BanUserService {
 	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
@@ -71,27 +72,16 @@ class BanUserService {
 				throw new Error('No admin user was found with that JWT.');
 			}
 
-			await this.mailProvider.sendMail({
-				to: {
+			await Queue.add('BanMail', {
+				user: {
 					name: user.name,
-					email: user.email,
+					email: user.name,
+					reason_for_ban: user.name,
 				},
-				from: {
-					name: 'NeoExpensive Team',
-					email: 'equipe@neoexpensive.com',
-				},
-
-				subject: `You're banned ${user.name}!`,
-				body: `
-					<p>
-						${user.name} you were banned by <strong>${admin_user.name}</strong>:<br>
-						reason: ${user.reason_for_ban}
-					</p>
-				`,
+				admin_user,
 			});
 		} catch (error) {
 			throw new Error(error.message);
-			return error;
 		}
 	}
 }

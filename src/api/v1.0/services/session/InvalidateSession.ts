@@ -3,8 +3,6 @@ import { Request } from 'express';
 import { IUsersRepository } from '@v1/repositories';
 import { SqliteUsersRepository } from '@v1/repositories/implementations';
 
-import { User } from '@v1/entities';
-
 class InvalidateSessionService {
 	constructor(private usersRepository: IUsersRepository) {}
 

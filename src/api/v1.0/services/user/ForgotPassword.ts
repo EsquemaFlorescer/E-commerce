@@ -7,6 +7,8 @@ import { SqliteUsersRepository } from '@v1/repositories/implementations';
 import { IMailProvider } from '@v1/providers';
 import { MailTrapMailProvider } from '@v1/providers/implementations';
 
+import Queue from '@v1/config/queue';
+
 class ForgotPasswordService {
 	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
@@ -31,7 +33,7 @@ class ForgotPasswordService {
 
 			const newUser = await this.usersRepository.findById(id);
 
-			const access_token = sign(
+			const token = sign(
 				{
 					id: user.id,
 					token_version: newUser.token_version,
@@ -40,17 +42,12 @@ class ForgotPasswordService {
 				{ expiresIn: '7d' }
 			);
 
-			await this.mailProvider.sendMail({
-				to: {
+			await Queue.add('ForgotPasswordMail', {
+				user: {
 					name: user.name,
 					email: user.email,
 				},
-				from: {
-					name: 'NeoExpensive Team',
-					email: 'equipe@neoexpensive.com',
-				},
-				subject: 'Forgot password.',
-				body: `<p>You forgot your password? No trouble, use this token:\n ${access_token}</p>`,
+				token,
 			});
 		} catch (error) {
 			if (error.message == 'FindUserById method failed.') {

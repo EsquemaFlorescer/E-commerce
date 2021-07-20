@@ -6,11 +6,10 @@ import { IUsersRepository } from '@v1/repositories';
 import { IMailProvider } from '@v1/providers';
 import { MailTrapMailProvider } from '@v1/providers/implementations';
 
+import Queue from '@v1/config/queue';
+
 class DeleteUserService {
-	constructor(
-		private usersRepository: IUsersRepository,
-		private mailProvider: IMailProvider
-	) {}
+	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
 	async delete(id: string) {
 		try {
@@ -20,21 +19,14 @@ class DeleteUserService {
 				throw new Error('user with this id not found.');
 			}
 
-			await this.mailProvider.sendMail({
-				to: {
+			await this.usersRepository.delete(id);
+
+			await Queue.add('DeletionMail', {
+				user: {
 					name: user.name,
 					email: user.email,
 				},
-				from: {
-					name: 'NeoExpensive Team',
-					email: 'equipe@neoexpensive.com',
-				},
-
-				subject: `Goodbye from NeoExpensive ${user.name}!`,
-				body: `We're so sad to see you go ${user.name}...`,
 			});
-
-			await this.usersRepository.delete(id);
 		} catch (error) {
 			throw new Error(error.message);
 		}
