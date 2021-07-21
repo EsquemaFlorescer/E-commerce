@@ -15,7 +15,7 @@ import {
 
 import Frete from 'frete';
 
-import { Address } from '@prisma/client';
+import { Address, Dimension } from '@prisma/client';
 import { Order } from '@v1/entities';
 
 type FreteResponse = {
@@ -55,6 +55,20 @@ type userResponse = {
 	address?: Address[];
 };
 
+type itemResponse = {
+	id: number;
+	created_at: number;
+	name: string;
+	brand: string | null;
+	short_name: string;
+	description: string;
+	price: number;
+	shipping_price: number;
+	discount: number;
+	category: string;
+	dimension?: Dimension;
+};
+
 class CheckoutService {
 	constructor(
 		private itemsRepository: IItemsRepository,
@@ -77,18 +91,17 @@ class CheckoutService {
 
 			// single-item checkout
 			if (!!item_id === true) {
-				const item = await this.itemsRepository.findById(Number(item_id));
+				const item: itemResponse = await this.itemsRepository.findById(Number(item_id));
 				if (!item) throw new Error("This item doesn't exist.");
-
 				const [{ valor, prazoEntrega }]: FreteResponse[] = await Frete()
 					.cepOrigem('02228240')
 					.cepDestino(postal_code)
-					.peso(1)
+					.peso(item.dimension?.weight!)
 					.formato(Frete.formatos.caixaPacote)
-					.comprimento(27)
-					.altura(8)
-					.largura(10)
-					.diametro(18)
+					.comprimento(item.dimension?.length!)
+					.altura(item.dimension?.height!)
+					.largura(item.dimension?.width!)
+					.diametro(item.dimension?.diameter!)
 					.maoPropria('N')
 					.valorDeclarado(item.price / 100)
 					.avisoRecebimento('S')
@@ -158,18 +171,18 @@ class CheckoutService {
 
 			for (const { item_id } of cart) {
 				try {
-					const item = await this.itemsRepository.findById(item_id);
+					const item: itemResponse = await this.itemsRepository.findById(item_id);
 					if (!item) throw new Error('Item on your cart is no longer valid.');
 
 					const [{ valor, prazoEntrega }]: FreteResponse[] = await Frete()
 						.cepOrigem('02228240')
 						.cepDestino(postal_code)
-						.peso(1)
+						.peso(item.dimension?.weight!)
 						.formato(Frete.formatos.caixaPacote)
-						.comprimento(27)
-						.altura(8)
-						.largura(10)
-						.diametro(18)
+						.comprimento(item.dimension?.length!)
+						.altura(item.dimension?.height!)
+						.largura(item.dimension?.width!)
+						.diametro(item.dimension?.diameter!)
 						.maoPropria('N')
 						.valorDeclarado(item.price / 10)
 						.avisoRecebimento('S')
@@ -242,7 +255,7 @@ class CheckoutService {
 				},
 			};
 		} catch (error) {
-			console.log(error.message);
+			// console.log(error.message);
 
 			throw new Error(error.message);
 		}
