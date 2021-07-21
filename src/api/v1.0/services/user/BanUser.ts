@@ -13,7 +13,7 @@ import Queue from '@v1/config/queue';
 class BanUserService {
 	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
-	async ban(id: string, { query, headers }: Request<ParsedQs>) {
+	async execute(id: string, { query, headers }: Request<ParsedQs>) {
 		try {
 			const isShadowBan = String(query.shadow);
 			const reason_for_ban = String(query.reason);
@@ -92,7 +92,7 @@ export default async (request: Request) => {
 		const MailProvider = new MailTrapMailProvider();
 		const BanUser = new BanUserService(UsersRepository, MailProvider);
 
-		await BanUser.ban(request.params.id, request);
+		await BanUser.execute(request.params.id, request);
 
 		return {
 			status: 202,
@@ -102,7 +102,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to ban user.',
+			message: error.message,
 		};
 	}
 };

@@ -8,7 +8,7 @@ import { Address } from '@v1/entities';
 class CreateAddressService {
 	constructor(private addressRepository: IAddressRepository) {}
 
-	async create(addressRequest: Address, id: string) {
+	async execute(addressRequest: Address, id: string) {
 		try {
 			if (!id) throw new Error('a user id is required to create an address');
 
@@ -39,7 +39,7 @@ export default async (request: Request) => {
 		const AddressRepository = new SqliteAddressRepository();
 		const CreateAddress = new CreateAddressService(AddressRepository);
 
-		const { address } = await CreateAddress.create(request.body, request.params.id);
+		const { address } = await CreateAddress.execute(request.body, request.params.id);
 
 		return {
 			status: 201,

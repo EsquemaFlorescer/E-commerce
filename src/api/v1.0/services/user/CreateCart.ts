@@ -6,7 +6,7 @@ import { SqliteCartRepository } from '@v1/repositories/implementations';
 class CreateCartService {
 	constructor(private cartRepository: ICartRepository) {}
 
-	async create(user_id: string, { item_id }: any) {
+	async execute(user_id: string, { item_id }: any) {
 		try {
 			await this.cartRepository.save(user_id, item_id);
 
@@ -26,7 +26,7 @@ export default async (request: Request) => {
 		const cartRepository = new SqliteCartRepository();
 		const CartService = new CreateCartService(cartRepository);
 
-		const { cart } = await CartService.create(request.params.id, request.body);
+		const { cart } = await CartService.execute(request.params.id, request.body);
 
 		return {
 			status: 201,
@@ -37,7 +37,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to create cart',
+			message: error.message,
 		};
 	}
 };

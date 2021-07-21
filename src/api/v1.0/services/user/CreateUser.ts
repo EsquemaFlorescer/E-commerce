@@ -12,7 +12,7 @@ import Queue from '@v1/config/queue';
 class CreateUserService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async create({ name, email, password }: User) {
+	async execute({ name, email, password }: User) {
 		try {
 			const access_token = String(process.env.JWT_ACCESS_TOKEN);
 
@@ -50,7 +50,7 @@ export default async (request: Request) => {
 		const UsersRepository = new SqliteUsersRepository();
 		const CreateUser = new CreateUserService(UsersRepository);
 
-		await CreateUser.create(request.body);
+		await CreateUser.execute(request.body);
 
 		// respond with user information
 		return {

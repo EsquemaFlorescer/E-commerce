@@ -8,7 +8,7 @@ import { User } from '@v1/entities';
 class UpdateUserService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async update(id: string, { name, lastname, username, cpf, email, password }: User, ip: string) {
+	async execute(id: string, { name, lastname, username, cpf, email, password }: User, ip: string) {
 		try {
 			// middleware already checks for JWT
 			const userInfo = await this.usersRepository.findById(id, 'userhash');
@@ -62,7 +62,7 @@ export default async (request: Request) => {
 		const UsersRepository = new SqliteUsersRepository();
 		const UpdateUser = new UpdateUserService(UsersRepository);
 
-		const { usernameAlreadyExists, available_usernames, user } = await UpdateUser.update(
+		const { usernameAlreadyExists, available_usernames, user } = await UpdateUser.execute(
 			request.params.id,
 			request.body,
 			request.ip

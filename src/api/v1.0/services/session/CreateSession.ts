@@ -23,7 +23,7 @@ type loginRequestType = {
 class CreateSessionService {
 	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
-	async create(loginRequest: loginRequestType, authHeader: string | undefined, ip: string) {
+	async execute(loginRequest: loginRequestType, authHeader: string | undefined, ip: string) {
 		try {
 			const { id, token_version }: any = auth.verify(authHeader, 'access');
 
@@ -168,7 +168,7 @@ export default async (request: Request) => {
 		const MailProvider = new MailTrapMailProvider();
 		const CreateSession = new CreateSessionService(UsersRepository, MailProvider);
 
-		const { refresh_token, jwt_login, social_login } = await CreateSession.create(
+		const { refresh_token, jwt_login, social_login } = await CreateSession.execute(
 			request.body,
 			request.headers['authorization'],
 			request.ip

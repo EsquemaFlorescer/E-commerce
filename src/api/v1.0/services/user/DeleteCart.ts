@@ -7,7 +7,7 @@ import { SqliteCartRepository } from '@v1/repositories/implementations';
 class DeleteCartService {
 	constructor(private cartRepository: ICartRepository) {}
 
-	async delete(user_id: string, { query }: Request<ParsedQs>) {
+	async execute(user_id: string, { query }: Request<ParsedQs>) {
 		try {
 			const id = Number(query.id);
 
@@ -23,7 +23,7 @@ export default async (request: Request) => {
 		const CartRepository = new SqliteCartRepository();
 		const DeleteCart = new DeleteCartService(CartRepository);
 
-		await DeleteCart.delete(request.params.id, request);
+		await DeleteCart.execute(request.params.id, request);
 
 		return {
 			status: 200,
@@ -33,7 +33,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to remove item from cart',
+			message: error.message,
 		};
 	}
 };

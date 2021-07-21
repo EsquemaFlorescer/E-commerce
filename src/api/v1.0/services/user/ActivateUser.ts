@@ -11,7 +11,7 @@ import Queue from '@v1/config/queue';
 class ActivateUserService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async activate(authHeader: string | undefined, ip: string) {
+	async execute(authHeader: string | undefined, ip: string) {
 		try {
 			const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
 
@@ -74,7 +74,7 @@ export default async (request: Request) => {
 
 		const ActivateUser = new ActivateUserService(UsersRepository);
 
-		const { user, access_token } = await ActivateUser.activate(
+		const { user, access_token } = await ActivateUser.execute(
 			request.headers['authorization'],
 			request.ip
 		);

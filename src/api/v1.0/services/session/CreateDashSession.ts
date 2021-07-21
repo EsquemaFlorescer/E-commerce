@@ -15,7 +15,7 @@ type LoginRequestType = {
 class CreateDashSessionService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async login(loginRequest: LoginRequestType, authHeader: string | undefined) {
+	async execute(loginRequest: LoginRequestType, authHeader: string | undefined) {
 		try {
 			const dash_access_token = String(process.env.DASH_ACCESS_TOKEN);
 			const dash_refresh_token = String(process.env.DASH_REFRESH_TOKEN);
@@ -81,7 +81,7 @@ export default async (request: Request) => {
 		const UsersRepository = new SqliteUsersRepository();
 		const CreateDashSession = new CreateDashSessionService(UsersRepository);
 
-		const { refresh_token, jwt_login, social_login } = await CreateDashSession.login(
+		const { refresh_token, jwt_login, social_login } = await CreateDashSession.execute(
 			request.body,
 			request.headers['authorization']
 		);
@@ -96,7 +96,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to login as an Admin.',
+			message: error.message,
 		};
 	}
 };

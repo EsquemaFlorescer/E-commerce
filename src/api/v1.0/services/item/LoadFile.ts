@@ -1,45 +1,43 @@
-import { Request } from "express"
+import { Request } from 'express';
 
-import { IItemsRepository } from "@v1/repositories"
-import { SqliteItemsRepository } from "@v1/repositories/implementations"
+import { IItemsRepository } from '@v1/repositories';
+import { SqliteItemsRepository } from '@v1/repositories/implementations';
 
-import { Item } from "@v1/entities"
+import { Item } from '@v1/entities';
 
 class LoadFileService {
-  constructor(
-    private itemsRepository: IItemsRepository
-  ) {}
+	constructor(private itemsRepository: IItemsRepository) {}
 
-  async load(items: Item[]) {
-    try {
-      items.forEach(async (item: Item) => {
-        const newItem = new Item(item, item.image)
-        await this.itemsRepository.save(newItem)
-      })
+	async execute(items: Item[]) {
+		try {
+			items.forEach(async (item: Item) => {
+				const newItem = new Item(item, item.image);
+				await this.itemsRepository.save(newItem);
+			});
 
-      return
-    } catch (error) {
-      throw new Error(error.message)
-    }
-  }
+			return;
+		} catch (error) {
+			throw new Error(error.message);
+		}
+	}
 }
 
 export default async (request: Request) => {
-  try {
-    const itemsRepository = new SqliteItemsRepository()
-    const LoadFile = new LoadFileService(itemsRepository)
+	try {
+		const itemsRepository = new SqliteItemsRepository();
+		const LoadFile = new LoadFileService(itemsRepository);
 
-    await LoadFile.load(request.body)
+		await LoadFile.execute(request.body);
 
-    return ({
-      status: 200,
-      message: "Loaded items from file with success!"
-    })
-  } catch (error) {
-    return ({
-      error: true,
-      status: 400,
-      message: "Failed to load items from file."
-    })
-  }
-}
+		return {
+			status: 200,
+			message: 'Loaded items from file with success!',
+		};
+	} catch (error) {
+		return {
+			error: true,
+			status: 400,
+			message: error.message,
+		};
+	}
+};

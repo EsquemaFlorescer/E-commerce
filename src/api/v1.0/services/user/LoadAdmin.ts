@@ -9,7 +9,7 @@ import auth from '@v1/auth';
 class LoadAdminService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async load(users: User[]) {
+	async execute(users: User[]) {
 		try {
 			for (let user of users) {
 				const userAlreadyExists = await this.usersRepository.findByEmail(user.email);
@@ -52,7 +52,7 @@ export default async (request: Request) => {
 		const usersRepository = new SqliteUsersRepository();
 		const LoadAdmin = new LoadAdminService(usersRepository);
 
-		const { user } = await LoadAdmin.load(request.body);
+		const { user } = await LoadAdmin.execute(request.body);
 
 		return {
 			status: 200,

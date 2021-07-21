@@ -11,7 +11,7 @@ import Queue from '@v1/config/queue';
 class DeleteUserService {
 	constructor(private usersRepository: IUsersRepository, private mailProvider: IMailProvider) {}
 
-	async delete(id: string) {
+	async execute(id: string) {
 		try {
 			const user = await this.usersRepository.findById(id);
 
@@ -39,7 +39,7 @@ export default async (request: Request) => {
 		const MailProvider = new MailTrapMailProvider();
 		const DeleteUser = new DeleteUserService(UsersRepository, MailProvider);
 
-		await DeleteUser.delete(request.params.id);
+		await DeleteUser.execute(request.params.id);
 
 		return {
 			status: 200,

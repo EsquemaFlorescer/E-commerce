@@ -6,7 +6,7 @@ import { SqliteUsersRepository } from '@v1/repositories/implementations';
 class InvalidateSessionService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async invalidate(id: string) {
+	async execute(id: string) {
 		try {
 			const userInfo = await this.usersRepository.findById(id);
 
@@ -38,7 +38,7 @@ export default async (request: Request) => {
 		const usersRepository = new SqliteUsersRepository();
 		const InvalidateSession = new InvalidateSessionService(usersRepository);
 
-		await InvalidateSession.invalidate(request.params.id);
+		await InvalidateSession.execute(request.params.id);
 
 		return {
 			status: 200,

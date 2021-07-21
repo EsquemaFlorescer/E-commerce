@@ -8,7 +8,7 @@ import { Item } from '@v1/entities';
 class UpdateItemService {
 	constructor(private itemsRepository: IItemsRepository) {}
 
-	async update(id: number, updateItemRequest: Item) {
+	async execute(id: number, updateItemRequest: Item) {
 		try {
 			const item = await this.itemsRepository.update(id, updateItemRequest);
 
@@ -26,7 +26,7 @@ export default async (request: Request) => {
 		const ItemsRepository = new SqliteItemsRepository();
 		const UpdateItem = new UpdateItemService(ItemsRepository);
 
-		const { item } = await UpdateItem.update(Number(request.params.id), request.body);
+		const { item } = await UpdateItem.execute(Number(request.params.id), request.body);
 
 		return {
 			status: 202,
@@ -38,7 +38,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to update item.',
+			message: error.message,
 		};
 	}
 };

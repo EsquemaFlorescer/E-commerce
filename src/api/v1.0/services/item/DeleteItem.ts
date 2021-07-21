@@ -6,7 +6,7 @@ import { SqliteCartRepository, SqliteItemsRepository } from '@v1/repositories/im
 class DeleteItemService {
 	constructor(private itemsRepository: IItemsRepository, private cartRepository: ICartRepository) {}
 
-	async delete(id: number, { query }: Request) {
+	async execute(id: number, { query }: Request) {
 		try {
 			const confirmed = query.confirmed;
 
@@ -43,7 +43,7 @@ export default async (request: Request) => {
 		const CartRepository = new SqliteCartRepository();
 		const DeleteItem = new DeleteItemService(ItemsRepository, CartRepository);
 
-		await DeleteItem.delete(Number(request.params.id), request);
+		await DeleteItem.execute(Number(request.params.id), request);
 
 		return {
 			status: 200,

@@ -8,7 +8,7 @@ import { Rating } from '@v1/entities';
 class RateItemService {
 	constructor(private itemsRepository: IItemsRepository) {}
 
-	async rate(id: number, rateItemRequest: Rating) {
+	async execute(id: number, rateItemRequest: Rating) {
 		try {
 			const rating = new Rating(rateItemRequest, id);
 			const { average, ...props } = await this.itemsRepository.rate(rating);
@@ -30,7 +30,7 @@ export default async (request: Request) => {
 		const ItemsRepository = new SqliteItemsRepository();
 		const RateItem = new RateItemService(ItemsRepository);
 
-		const { item, average } = await RateItem.rate(Number(request.params.id), request.body);
+		const { item, average } = await RateItem.execute(Number(request.params.id), request.body);
 
 		return {
 			status: 200,
@@ -42,7 +42,7 @@ export default async (request: Request) => {
 		return {
 			error: true,
 			status: 400,
-			message: 'Failed to rate item.',
+			message: error.message,
 		};
 	}
 };
