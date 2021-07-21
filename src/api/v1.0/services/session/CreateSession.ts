@@ -11,6 +11,7 @@ import { isBanned } from '@v1/utils/IsBanned';
 import auth from '@v1/auth';
 
 import Queue from '@v1/config/queue';
+import validator from 'validator';
 
 type loginRequestType = {
 	email: string;
@@ -67,16 +68,18 @@ class CreateSessionService {
 			if (error.message == 'Your session was invalidated.') {
 				throw new Error(error.message);
 			}
+			const { email, username, userhash } = loginRequest;
+			const emailLogin = !!email && (!!username === false || !!userhash === false);
+			const isOneLogin = !!email && (!!username || !!userhash);
+			const isBothLogin = !!email && !!username && !!userhash;
 
-			// if (loginRequest.email == undefined) throw new Error('please insert e-mail');
+			if (isBothLogin) throw new Error('You cannot login with both ways.');
+			if (!isBothLogin && isOneLogin) throw new Error('Please login with email or username.');
 
-			// const isEmail = validator.isEmail(loginRequest.email)
-			// if (!isEmail) throw new Error('please insert a valid e-mail');
+			const isValidEmail = validator.isEmail(email);
+			if (emailLogin && !isValidEmail) throw new Error('Please insert a valid email.');
 
-			// if (!isEmail && loginRequest.username == undefined && loginRequest.userhash == undefined)
-			// 	throw new Error('please insert username and userhash');
-
-			if (loginRequest.email == undefined) {
+			if (!emailLogin) {
 				// find user
 				const { user, failed_too_many, matchPassword } = await auth.loginUsername(loginRequest);
 				if (failed_too_many) {
