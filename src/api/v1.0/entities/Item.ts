@@ -1,5 +1,4 @@
-import { Rating } from './Rating';
-import { Image } from './Image';
+import { Rating, Image, Dimension } from '.';
 
 export class Item {
 	public readonly created_at: number;
@@ -14,10 +13,11 @@ export class Item {
 
 	public category: string;
 
-	public image?: Image[];
-	public rating?: Rating[];
+	public image: Image[];
+	public rating: Rating[];
+	public dimension: Dimension;
 
-	constructor(props: Item, image: Image[]) {
+	constructor(props: Item, image?: Image[]) {
 		this.created_at = Date.now();
 		if (image) {
 			this.image = image;
