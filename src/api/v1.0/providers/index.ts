@@ -1,3 +1,1 @@
-import { IMailProvider } from './IMailProvider';
-
-export { IMailProvider };
+export { IMailProvider } from './IMailProvider';

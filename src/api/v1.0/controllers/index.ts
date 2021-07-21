@@ -1,11 +1,4 @@
-import { UserController } from "./UserController"
-import { ItemController } from "./ItemController"
-import { SessionController } from "./SessionController"
-import { DashboardController } from "./DashboardController"
-
-export {
-  UserController,
-  ItemController,
-  SessionController,
-  DashboardController
-}
+export { UserController } from './UserController';
+export { ItemController } from './ItemController';
+export { SessionController } from './SessionController';
+export { DashboardController } from './DashboardController';

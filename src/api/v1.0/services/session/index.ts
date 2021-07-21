@@ -1,5 +1,3 @@
-import CreateSession from './CreateSession';
-import CreateDashSession from './CreateDashSession';
-import InvalidateSession from './InvalidateSession';
-
-export { CreateSession, CreateDashSession, InvalidateSession };
+export { default as CreateSession } from './CreateSession';
+export { default as CreateDashSession } from './CreateDashSession';
+export { default as InvalidateSession } from './InvalidateSession';
