@@ -85,7 +85,7 @@ model Cart {
 }
 
 model Item {
-  id             Int      @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   created_at     Int
   name           String
   brand          String?
@@ -96,9 +96,21 @@ model Item {
   discount       Int
   category       String
   image          Image[]
+  dimension      Dimension?
   rating         Rating[]
   Cart           Cart[]
   Order          Order[]
+}
+
+model Dimension {
+  id       Int  @id @default(autoincrement())
+  item_id  Int
+  weight   Int
+  length   Int
+  height   Int
+  width    Int
+  diameter Int
+  item     Item @relation(fields: [item_id], references: [id])
 }
 
 model Order {
