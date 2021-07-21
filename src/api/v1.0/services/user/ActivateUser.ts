@@ -14,20 +14,19 @@ class ActivateUserService {
 	async execute(authHeader: string | undefined, ip: string) {
 		try {
 			const access_token_secret = String(process.env.JWT_ACCESS_TOKEN);
-
 			if (!authHeader) throw new Error('Token not found.');
 
 			const token = authHeader && authHeader.split(' ')[1];
 			if (!token) throw new Error('Your token must include Bearer');
 
-			const { name, email, password }: any = verify(token, access_token_secret);
+			const { name, email, password, isHash }: any = verify(token, access_token_secret);
 
 			const userAlreadyExists = await this.usersRepository.findByEmail(email);
 
 			if (userAlreadyExists.length) throw new Error('User already exists.');
 
 			ip = ip.slice(7);
-			const user = new User({
+			let user = new User({
 				name,
 				email,
 				password,
@@ -46,6 +45,10 @@ class ActivateUserService {
 			);
 
 			if (userHashAlreadyExists.length) user.userhash = randomNumber(4);
+
+			if (!!isHash) {
+				user.password = password;
+			}
 
 			// store user
 			await this.usersRepository.save(user);

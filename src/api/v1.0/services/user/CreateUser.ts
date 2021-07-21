@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { sign } from 'jsonwebtoken';
 import validator from 'validator';
+import { hash } from 'bcrypt';
 
 import { IUsersRepository } from '@v1/repositories';
 import { SqliteUsersRepository } from '@v1/repositories/implementations';
@@ -12,8 +13,9 @@ import Queue from '@v1/config/queue';
 class CreateUserService {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async execute({ name, email, password }: User) {
+	async execute({ name, email, password }: User, { query }: Request) {
 		try {
+			const isHash = String(query.isHash);
 			const access_token = String(process.env.JWT_ACCESS_TOKEN);
 
 			const isEmail = validator.isEmail(email);
@@ -23,17 +25,32 @@ class CreateUserService {
 			const [userAlreadyExists] = await this.usersRepository.findByEmail(email);
 
 			// if user with same email exists
-			if (userAlreadyExists) throw new Error('User already exists.');
+			// if (userAlreadyExists) throw new Error('User already exists.');
 
-			const token = sign(
+			var token: string = '';
+			const hashPassword = await hash(password, 10);
+			token = sign(
 				{
 					name,
 					email,
-					password,
+					password: hashPassword,
 				},
 				access_token,
 				{ expiresIn: '15m' }
 			);
+			// if password is already encrypted.
+			if (!!isHash) {
+				token = sign(
+					{
+						name,
+						email,
+						password,
+						isHash,
+					},
+					access_token,
+					{ expiresIn: '15m' }
+				);
+			}
 
 			const user = { name, email };
 			const data = { user, token };
@@ -50,7 +67,7 @@ export default async (request: Request) => {
 		const UsersRepository = new SqliteUsersRepository();
 		const CreateUser = new CreateUserService(UsersRepository);
 
-		await CreateUser.execute(request.body);
+		await CreateUser.execute(request.body, request);
 
 		// respond with user information
 		return {
