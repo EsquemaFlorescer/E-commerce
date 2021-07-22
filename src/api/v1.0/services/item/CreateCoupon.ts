@@ -10,7 +10,8 @@ class CreateCouponService {
 
 	async execute(item_id: number, { expire_date, code, value }: Coupon) {
 		try {
-			const coupon = new Coupon({ expire_date, code, item_id, value });
+			const date = Date.parse(expire_date.toString());
+			const coupon = new Coupon({ expire_date: date, code, item_id, value });
 
 			await this.couponRepository.save(coupon);
 
