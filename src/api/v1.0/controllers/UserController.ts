@@ -112,6 +112,22 @@ export const UserController = {
 		return response.status(status).json({ message, payment });
 	},
 
+	async updatePayment(request: Request, response: Response) {
+		const { error, status, message, payment } = await service.UpdatePayment(request);
+
+		if (error) return response.status(status).json(message);
+
+		return response.status(status).json({ message, payment });
+	},
+
+	async removePayment(request: Request, response: Response) {
+		const { error, status, message } = await service.RemovePayment(request);
+
+		if (error) return response.status(status).json(message);
+
+		return response.status(status).json(message);
+	},
+
 	async checkout(request: Request, response: Response) {
 		const { error, status, message, prices } = await service.Checkout(request);
 
