@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 
-import CheckRefreshToken from '@v1/utils/CheckRefreshToken';
 import { prisma } from '@src/prisma';
 
 export default async (request: Request, response: Response, next: NextFunction) => {
@@ -30,9 +29,7 @@ export default async (request: Request, response: Response, next: NextFunction) 
 
 		if (userInfo?.token_version == null) throw new Error('No user found.');
 
-		const isInvalidated = CheckRefreshToken(token, userInfo.token_version);
-
-		if (isInvalidated) {
+		if (payload['token_version'] !== userInfo.token_version) {
 			throw new Error('Your session has been invalidated by an admin.');
 		}
 
