@@ -1,7 +1,7 @@
 import { IItemsRepository } from '@v1/repositories';
-import { Item, Rating, Image } from '@v1/entities';
+import { Item, Rating } from '@v1/entities';
 
-import { Item as ItemType, Rating as RatingType } from '@prisma/client';
+import { Item as ItemType } from '@prisma/client';
 import { prisma } from '@src/prisma';
 
 export class SqliteItemsRepository implements IItemsRepository {
@@ -39,8 +39,16 @@ export class SqliteItemsRepository implements IItemsRepository {
 						diameter: true,
 					},
 				},
-				Cart: true,
-				Order: true,
+				cart: true,
+				order: true,
+				coupon: {
+					select: {
+						id: true,
+						code: true,
+						value: true,
+						expire_date: true,
+					},
+				},
 			},
 		});
 
@@ -245,7 +253,7 @@ export class SqliteItemsRepository implements IItemsRepository {
 	}
 
 	async save(item: Item): Promise<void> {
-		const { image, dimension, ...props } = item;
+		const { image, dimension, coupon, ...props } = item;
 
 		const { width, weight, length, height, diameter } = dimension;
 
@@ -265,6 +273,26 @@ export class SqliteItemsRepository implements IItemsRepository {
 					image: {
 						create: {
 							link: imageInfo.link,
+						},
+					},
+				},
+			});
+		});
+
+		coupon.forEach(async coupon => {
+			const { value, code, expire_date } = coupon;
+
+			await prisma.item.update({
+				where: {
+					id: newItem.id,
+				},
+
+				data: {
+					coupon: {
+						create: {
+							value,
+							code,
+							expire_date,
 						},
 					},
 				},

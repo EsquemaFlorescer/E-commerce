@@ -5,3 +5,4 @@ export { SqliteImageRepository } from './SqliteImageRepository';
 export { SqliteCartRepository } from './SqliteCartRepository';
 export { SqlitePaymentRepository } from './SqlitePaymentRepository';
 export { SqliteOrderRepository } from './SqliteOrderRepository';
+export { SqliteCouponRepository } from './SqliteCouponRepository';

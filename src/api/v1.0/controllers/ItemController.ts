@@ -66,4 +66,22 @@ export const ItemController = {
 
 		return response.status(status).json(shipping);
 	},
+
+	async createCoupon(request: Request, response: Response) {
+		const { status, message, coupon } = await service.CreateCoupon(request);
+
+		return response.status(status).json({ message, coupon });
+	},
+
+	async readCoupon(request: Request, response: Response) {
+		const { status, message, coupon } = await service.ReadCoupon(request);
+
+		return response.status(status).json({ message, coupon });
+	},
+
+	async deleteCoupon(request: Request, response: Response) {
+		const { status, message } = await service.DeleteCoupon(request);
+
+		return response.status(status).json(message);
+	},
 };

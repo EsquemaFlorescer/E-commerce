@@ -6,6 +6,10 @@ const router = Router();
 
 router.get('/shipping', ItemController.getShipping);
 
+router.post('/coupon/:id?', ItemController.createCoupon);
+router.get('/coupon/:id?', ItemController.readCoupon);
+router.delete('/coupon/:id?', ItemController.deleteCoupon);
+
 router.post('/', ItemController.create); /* Creates item */
 router.get('/:id?', ItemController.read); /* Lists items */
 router.patch('/:id?', ItemController.update); /* Updates an especific item */
