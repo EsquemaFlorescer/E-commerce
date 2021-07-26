@@ -28,7 +28,9 @@ export default {
 				new Queue(job.name, redisConfig.url);
 			});
 
-			queue.bull.on('completed', (job: Job) => {});
+			queue.bull.on('completed', (job: Job) => {
+				return job.returnvalue;
+			});
 		});
 	},
 };

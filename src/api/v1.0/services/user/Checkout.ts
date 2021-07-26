@@ -70,6 +70,7 @@ type itemResponse = {
 	category: string;
 	dimension?: Dimension;
 };
+import Queue from '@v1/config/queue';
 
 class CheckoutService {
 	constructor(
@@ -108,76 +109,20 @@ class CheckoutService {
 
 			// single-item checkout
 			if (!!item_id === true) {
-				const item: itemResponse = await this.itemsRepository.findById(Number(item_id));
-				if (!item) throw new Error("This item doesn't exist.");
-
-				const [{ valor, prazoEntrega }]: FreteResponse[] = await Frete()
-					.cepOrigem('02228240')
-					.cepDestino(postal_code)
-					.peso(item.dimension?.weight!)
-					.formato(Frete.formatos.caixaPacote)
-					.comprimento(item.dimension?.length!)
-					.altura(item.dimension?.height!)
-					.largura(item.dimension?.width!)
-					.diametro(item.dimension?.diameter!)
-					.maoPropria('N')
-					.valorDeclarado(item.price / 100)
-					.avisoRecebimento('S')
-					.servico(Frete.servicos.sedex)
-					.precoPrazo('13466321'); // 01/01/1970;
-
-				const shipping_price = Number(valor.split(',').join(''));
-
-				var date = new Date();
-				date.setDate(date.getDate() + Number(prazoEntrega));
-
-				const percentagePrice = Math.floor(discount / 100);
-				if (percentagePrice === 0) {
-					const order = new Order({
-						user_id: id,
-						address_id,
-						item_id,
-						payment_id,
-						shipping_price,
-						all_items_price: item.price,
-					});
-
-					await this.orderRepository.save(order);
-
-					return {
-						prices: {
-							price: item.price,
-							discount: `${discount}%`,
-							shipping: {
-								shipping_price,
-								shipping_date: date.getTime(),
-							},
-						},
-					};
-				}
-
-				const price = item.price - percentagePrice * item.price;
-
-				const order = new Order({
+				const checkout = {
+					discount,
+					item_id,
 					user_id: id,
 					address_id,
-					item_id,
 					payment_id,
-					shipping_price,
-					all_items_price: price,
-				});
+					postal_code,
+				};
 
-				await this.orderRepository.save(order);
+				const SingleOrder = await Queue.add('SingleOrder', { checkout });
+				const results = await SingleOrder.finished();
 
 				return {
-					prices: {
-						price,
-						discount: `${discount}%`,
-						shipping: {
-							shipping_price,
-							shipping_date: date.getTime(),
-						},
-					},
+					prices: results.prices,
 				};
 			}
 

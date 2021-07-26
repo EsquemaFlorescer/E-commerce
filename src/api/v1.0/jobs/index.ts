@@ -6,6 +6,7 @@ export { BanMail } from './BanMail';
 export { DeletionMail } from './DeletionMail';
 export { ForgotPasswordMail } from './ForgotPasswordMail';
 export { FailedLoginMail } from './FailedLoginMail';
+export { SingleOrder } from './SingleOrder';
 
 export type DataType = {
 	user?: {
@@ -21,7 +22,7 @@ export type DataType = {
 	token?: string;
 	checkout?: {
 		discount: number;
-		item_id?: number;
+		item_id: number;
 		user_id: string;
 		address_id: number;
 		payment_id: number;
