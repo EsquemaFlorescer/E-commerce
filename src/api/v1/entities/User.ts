@@ -24,9 +24,9 @@ interface optionalProps {
 
 export class User {
 	public readonly id: string;
-	public readonly created_at: number;
+	public readonly created_at?: number;
 	public readonly admin?: boolean;
-	public ip: string;
+	public ip?: string;
 	public shadow_ban?: boolean;
 	public ban?: boolean;
 	public reason_for_ban?: string;
@@ -35,7 +35,7 @@ export class User {
 	public confirmed?: boolean | null;
 
 	public name: string;
-	public lastname?: string | undefined;
+	public lastname?: string;
 	public username?: string | any;
 	public userhash?: number | any;
 	public cpf?: string;
@@ -51,7 +51,9 @@ export class User {
 		{ id, created_at, admin }: optionalProps = {}
 	) {
 		// if no id was supplied, generate uuid
-		if (!id) this.id = uuid();
+		if (!id) {
+			this.id = uuid();
+		}
 
 		if (id) this.id = id;
 
@@ -79,7 +81,9 @@ export class User {
 
 		// encrypt password and ip
 		const salt = genSaltSync(10);
-		this.ip = hashSync(this.ip, 4);
+		if (this.ip) {
+			this.ip = hashSync(this.ip, 4);
+		}
 		this.password = hashSync(this.password, salt);
 	}
 }
