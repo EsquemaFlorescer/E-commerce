@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 
 import * as service from '@v1/services/user';
+import { createUser } from '../useCases/CreateUser';
 
 export const UserController = {
 	async create(request: Request, response: Response) {
-		const { status, message } = await service.CreateUser(request);
-
-		return response.status(status).json(message);
+		return createUser.handle(request, response);
 	},
 
 	async read(request: Request, response: Response) {
@@ -42,10 +41,9 @@ export const UserController = {
 	},
 
 	async createAddress(request: Request, response: Response) {
-		const { status, message, address } = await service.CreateAddress(request);
+		const { status, address } = await service.CreateAddress(request);
 
 		return response.status(status).json({
-			message,
 			address,
 		});
 	},
