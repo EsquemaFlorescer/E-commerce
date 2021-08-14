@@ -17,14 +17,14 @@ export class MailTrapMailProvider implements IMailProvider {
 		const { body, subject, to } = message;
 		const { from } = MailConfig;
 
-		this.transporter.sendMail({
-			to: {
-				name: to.name,
-				address: to.email,
-			},
-			from,
-			subject,
-			html: body,
-		});
+		// this.transporter.sendMail({
+		// 	to: {
+		// 		name: to.name,
+		// 		address: to.email,
+		// 	},
+		// 	from,
+		// 	subject,
+		// 	html: body,
+		// });
 	}
 }

@@ -22,7 +22,7 @@ export default {
 
 	// Automatically clear mock calls and instances between every test
 	bail: true,
-	testMatch: ['**/tests/**/*.test.ts'],
+	testMatch: ['**/src/api/**/**.test.ts', '**/src/api/**/**.spec.ts'],
 	clearMocks: true,
 
 	// Indicates whether the coverage information should be collected while executing the test
