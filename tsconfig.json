@@ -25,17 +25,17 @@
 		"paths": {
 			"@src/*": ["src/*"],
 			"@tests/*": ["src/tests/*"],
-			"@v1/*": ["src/api/v1.0/*"],
-			"@v1/auth/*": ["src/api/v1.0/auth/*"],
-			"@v1/routes/*": ["src/api/v1.0/routes/*"],
-			"@v1/utils/*": ["src/api/v1.0/utils/*"],
-			"@v1/entities/*": ["src/api/v1.0/entities/*"],
-			"@v1/repositories/*": ["src/api/v1.0/repositories/*"],
-			"@v1/controllers/*": ["src/api/v1.0/controllers/*"],
-			"@v1/services/*": ["src/api/v1.0/services/*"],
-			"@v1/providers/*": ["src/api/v1.0/providers/*"]
+			"@v1/*": ["src/api/v1/*"],
+			"@v1/auth/*": ["src/api/v1/auth/*"],
+			"@v1/routes/*": ["src/api/v1/routes/*"],
+			"@v1/utils/*": ["src/api/v1/utils/*"],
+			"@v1/entities/*": ["src/api/v1/entities/*"],
+			"@v1/repositories/*": ["src/api/v1/repositories/*"],
+			"@v1/controllers/*": ["src/api/v1/controllers/*"],
+			"@v1/services/*": ["src/api/v1/services/*"],
+			"@v1/providers/*": ["src/api/v1/providers/*"]
 		}
 	},
 	"exclude": ["node_modules", "tests"],
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*.ts"]
 }
