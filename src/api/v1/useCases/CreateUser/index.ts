@@ -22,4 +22,4 @@ const createUserUseCase = new CreateUserUseCase(
 );
 const createUser = new CreateUserController(createUserUseCase);
 
-export { createUser };
+export { createUser, createUserUseCase, hashPasswordProvider };
